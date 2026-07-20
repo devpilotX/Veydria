@@ -45,7 +45,7 @@ function Button({
   VariantProps<typeof buttonVariants> & {
     isLoading?: boolean;
   }) {
-  // Normal button — no loading support, default shadcn behavior
+  // Normal button - no loading support, default shadcn behavior
   if (isLoading === undefined) {
     return (
       <ButtonPrimitive
@@ -59,7 +59,7 @@ function Button({
     );
   }
 
-  // Loading-aware button — grid overlap for zero layout shift.
+  // Loading-aware button - grid overlap for zero layout shift.
   // Children are always wrapped in a span so has-[>svg] padding
   // stays consistent between loading and non-loading states.
   return (

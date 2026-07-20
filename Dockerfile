@@ -32,7 +32,7 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build-time env vars — override these with --build-arg or in compose.yml
+# Build-time env vars - override these with --build-arg or in compose.yml
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_CLERK_SIGN_IN_URL=/auth/sign-in
 ARG NEXT_PUBLIC_CLERK_SIGN_UP_URL=/auth/sign-up

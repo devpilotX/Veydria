@@ -1,5 +1,5 @@
 /**
- * tanstack-form.tsx — Main entry point for the form system.
+ * tanstack-form.tsx - Main entry point for the form system.
  *
  * Provides useAppForm, useFormFields, Form, SubmitButton, StepButton,
  * withForm, and withFieldGroup. See docs/forms.md for full usage guide.
@@ -159,7 +159,7 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     FieldLegend,
     FieldDescription,
     FieldSeparator,
-    // Composed field components (flat API — convenience pattern)
+    // Composed field components (flat API - convenience pattern)
     // These allow form.TextField, form.SelectField, etc.
     // For type-safe field names, use form.AppField render-prop instead.
     TextField: FormTextField,
@@ -174,7 +174,7 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
 });
 
 // ---------------------------------------------------------------------------
-// Type-safe field names — useFormFields
+// Type-safe field names - useFormFields
 // ---------------------------------------------------------------------------
 
 import type { WithTypedName } from './form-context';
