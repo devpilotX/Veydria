@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
-import { handleRoute, ok } from '@/lib/api/handler';
-import { requireTenant } from '@/lib/auth/require';
+import { created, handleRoute, ok } from '@/lib/api/handler';
+import { requireRole, requireTenant } from '@/lib/auth/require';
 import { listDocuments, listDocumentsSchema } from '@/server/services/documents';
+import { generateDocument, generateDocumentSchema } from '@/server/services/document-generator';
 
 export async function GET(request: NextRequest) {
   return handleRoute(async () => {
@@ -10,5 +11,13 @@ export async function GET(request: NextRequest) {
       Object.fromEntries(request.nextUrl.searchParams.entries())
     );
     return ok(await listDocuments(ctx, input));
+  });
+}
+
+export async function POST(request: NextRequest) {
+  return handleRoute(async () => {
+    const ctx = await requireRole('member');
+    const input = generateDocumentSchema.parse(await request.json());
+    return created(await generateDocument(ctx, input));
   });
 }

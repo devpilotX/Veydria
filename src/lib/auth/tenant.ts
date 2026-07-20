@@ -79,6 +79,21 @@ export async function getOrCreateOrganization(clerkOrgId: string, name?: string)
   return row;
 }
 
+/**
+ * Builds a tenant context for requests authenticated by an API key rather than
+ * a user session. API keys act with member level access.
+ */
+export function apiKeyContext(organizationId: string): TenantContext {
+  return {
+    organizationId,
+    clerkOrgId: '',
+    userId: null,
+    clerkUserId: null,
+    role: 'member',
+    isDemo: false
+  };
+}
+
 export async function getOrCreateUser(clerkUserId: string, email?: string) {
   const existing = await db.query.users.findFirst({
     where: eq(users.clerkUserId, clerkUserId)
