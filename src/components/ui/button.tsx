@@ -40,11 +40,18 @@ function Button({
   isLoading,
   children,
   disabled,
+  nativeButton,
+  render,
   ...props
 }: ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
     isLoading?: boolean;
   }) {
+  // When the button renders as a custom element through `render` (for example a
+  // Link), it is not a native <button>, so tell Base UI not to expect one. A
+  // caller can still override this explicitly.
+  const resolvedNativeButton = nativeButton ?? render === undefined;
+
   // Normal button - no loading support, default shadcn behavior
   if (isLoading === undefined) {
     return (
@@ -52,6 +59,8 @@ function Button({
         data-slot='button'
         className={cn(buttonVariants({ variant, size, className }))}
         disabled={disabled}
+        nativeButton={resolvedNativeButton}
+        render={render}
         {...props}
       >
         {children}
@@ -72,6 +81,8 @@ function Button({
       )}
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
+      nativeButton={resolvedNativeButton}
+      render={render}
       {...props}
     >
       <span className={cn('inline-flex items-center gap-2', isLoading && 'invisible')}>
