@@ -1,12 +1,12 @@
 /**
- * form-context.tsx — Shared primitives for the TanStack Form + shadcn/ui integration.
+ * form-context.tsx - Shared primitives for the TanStack Form + shadcn/ui integration.
  *
  * This file provides:
  *  - React contexts created by TanStack Form (fieldContext, formContext)
  *  - Enhanced useFieldContext with accessibility IDs and error state
  *  - Structural layout components (FormFieldSet, FormField, FormFieldError)
- *  - createFormField() — wraps a base field into a flat, self-wiring component
- *  - FieldConfig types — validators, listeners, asyncDebounceMs
+ *  - createFormField() - wraps a base field into a flat, self-wiring component
+ *  - FieldConfig types - validators, listeners, asyncDebounceMs
  *  - Type-safe name utilities (WithTypedName, typedField)
  *
  * Consumed by:
@@ -208,27 +208,27 @@ function scrollToFirstError() {
 
 /** Field-level validators forwarded to form.Field */
 interface FieldValidatorConfig {
-  /** Sync validator — runs on every value change. Accepts a function or Zod schema. */
+  /** Sync validator - runs on every value change. Accepts a function or Zod schema. */
   onChange?: unknown;
-  /** Async validator — runs on value change (debounced). */
+  /** Async validator - runs on value change (debounced). */
   onChangeAsync?: unknown;
   /** Debounce (ms) for onChangeAsync. */
   onChangeAsyncDebounceMs?: number;
   /** Re-run onChange/onChangeAsync when these other fields change (linked validation). */
   onChangeListenTo?: string[];
-  /** Sync validator — runs when the field loses focus. Accepts a function or Zod schema. */
+  /** Sync validator - runs when the field loses focus. Accepts a function or Zod schema. */
   onBlur?: unknown;
-  /** Async validator — runs on blur. */
+  /** Async validator - runs on blur. */
   onBlurAsync?: unknown;
   /** Debounce (ms) for onBlurAsync. */
   onBlurAsyncDebounceMs?: number;
   /** Re-run onBlur/onBlurAsync when these other fields blur. */
   onBlurListenTo?: string[];
-  /** Sync validator — runs on form submission. */
+  /** Sync validator - runs on form submission. */
   onSubmit?: unknown;
-  /** Async validator — runs on form submission. */
+  /** Async validator - runs on form submission. */
   onSubmitAsync?: unknown;
-  /** Sync validator — runs on field mount. */
+  /** Sync validator - runs on field mount. */
   onMount?: unknown;
 }
 
@@ -269,7 +269,7 @@ interface FieldConfig {
 }
 
 // ---------------------------------------------------------------------------
-// 5. createFormField — lifts a field component into a flat form-level component
+// 5. createFormField - lifts a field component into a flat form-level component
 //
 //    Forwards TanStack Form's field-level config (validators, listeners)
 //    to form.Field while keeping the ergonomic flat API.

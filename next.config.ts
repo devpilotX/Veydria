@@ -26,6 +26,31 @@ const baseConfig: NextConfig = {
   transpilePackages: ['geist'],
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production'
+  },
+  async headers() {
+    // Baseline security headers on every response. A strict Content Security
+    // Policy is left out here because the app loads Clerk and an inline theme
+    // script, which would need per request nonces. Add it with a nonce when
+    // you lock the app down further.
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          }
+        ]
+      }
+    ];
   }
 };
 
