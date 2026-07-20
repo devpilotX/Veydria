@@ -68,6 +68,11 @@ husky/
 .DS_Store
 Thumbs.db
 
+# Python evals service (built as its own image)
+services/
+**/.venv/
+*.bundle
+
 # AI tool configs
 .cursor/
 .claude

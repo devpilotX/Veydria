@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { ObligationStatusBadge, RiskBadge } from '@/components/dashboard/badges';
+import { RiskBadge } from '@/components/dashboard/badges';
 import { EmptyState, Pagination } from '@/components/dashboard/empty-state';
 import { Icons } from '@/components/icons';
 import { getDashboardContext } from '@/lib/auth/page';
@@ -32,7 +32,7 @@ export default async function SystemsPage({
     search: params.search,
     riskTier: params.riskTier || undefined
   });
-  const { items, total, page, pageCount } = await listAiSystems(ctx, input);
+  const { items, page, pageCount } = await listAiSystems(ctx, input);
 
   return (
     <PageContainer

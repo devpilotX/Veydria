@@ -28,7 +28,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<unknown> {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      ...(init?.headers ?? {})
+      ...init?.headers
     }
   });
   const text = await response.text();

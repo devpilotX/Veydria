@@ -19,7 +19,7 @@ function formatDate(iso: string): string {
 }
 
 export default function BlogPage() {
-  const posts = [...blogPosts].sort((a, b) => b.date.localeCompare(a.date));
+  const posts = [...blogPosts].toSorted((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className='mx-auto max-w-3xl px-4 py-16 sm:px-6'>

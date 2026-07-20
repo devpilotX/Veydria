@@ -1,0 +1,49 @@
+# Runs the full AgentProof stack locally: Postgres, the web app, and the evals
+# service. Copy .env to fill in real keys. Run migrations once the database is
+# up: pnpm db:migrate && pnpm db:seed (from the host, pointed at localhost:5432).
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: agentproof
+    ports:
+      - '5432:5432'
+    volumes:
+      - agentproof_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/agentproof
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      EVALS_SERVICE_URL: http://evals:8000
+      EVALS_SERVICE_API_KEY: ${EVALS_SERVICE_API_KEY:-dev-evals-key-change-me}
+      AUDIT_LOG_SECRET: ${AUDIT_LOG_SECRET:-dev-audit-secret-change-me}
+      NEXT_PUBLIC_SENTRY_DISABLED: 'true'
+    ports:
+      - '3000:3000'
+
+  evals:
+    build:
+      context: ./services/evals
+      dockerfile: Dockerfile
+    environment:
+      EVALS_SERVICE_API_KEY: ${EVALS_SERVICE_API_KEY:-dev-evals-key-change-me}
+    ports:
+      - '8000:8000'
+
+volumes:
+  agentproof_pgdata:
