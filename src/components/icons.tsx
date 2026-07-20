@@ -87,6 +87,14 @@ import {
   IconUsers,
   IconVideo,
   IconCrown,
+  IconShieldCheck,
+  IconRobot,
+  IconActivity,
+  IconFingerprint,
+  IconBook2,
+  IconChecklist,
+  IconScale,
+  IconGauge,
   IconX
 } from '@tabler/icons-react';
 
@@ -219,5 +227,15 @@ export const Icons = {
   slash: IconSlash,
   calendar: IconCalendar,
   galleryVerticalEnd: IconStack2,
-  moreHorizontal: IconDots
+  moreHorizontal: IconDots,
+
+  // Compliance domain
+  shield: IconShieldCheck,
+  robot: IconRobot,
+  activity: IconActivity,
+  fingerprint: IconFingerprint,
+  regulations: IconBook2,
+  checklist: IconChecklist,
+  scale: IconScale,
+  gauge: IconGauge
 };

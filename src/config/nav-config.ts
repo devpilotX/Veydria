@@ -1,37 +1,12 @@
 import { NavGroup } from '@/types';
 
 /**
- * Navigation configuration with RBAC support
+ * Sidebar and command palette navigation.
  *
- * This configuration is used for both the sidebar navigation and Cmd+K bar.
- * Items are organized into groups, each rendered with a SidebarGroupLabel.
- *
- * RBAC Access Control:
- * Each navigation item can have an `access` property that controls visibility
- * based on permissions, plans, features, roles, and organization context.
- *
- * Examples:
- *
- * 1. Require organization:
- *    access: { requireOrg: true }
- *
- * 2. Require specific permission:
- *    access: { requireOrg: true, permission: 'org:teams:manage' }
- *
- * 3. Require specific plan:
- *    access: { plan: 'pro' }
- *
- * 4. Require specific feature:
- *    access: { feature: 'premium_access' }
- *
- * 5. Require specific role:
- *    access: { role: 'admin' }
- *
- * 6. Multiple conditions (all must be true):
- *    access: { requireOrg: true, permission: 'org:teams:manage', plan: 'pro' }
- *
- * Note: The `visible` function is deprecated but still supported for backward compatibility.
- * Use the `access` property for new items.
+ * Groups follow the five jobs of the product: see the estate on the dashboard,
+ * govern it, assure it with tests and monitoring, prove it with documents and
+ * the audit trail, then manage the workspace. Access rules hide items the
+ * current member cannot use. Real enforcement happens server side.
  */
 export const navGroups: NavGroup[] = [
   {
@@ -41,156 +16,112 @@ export const navGroups: NavGroup[] = [
         title: 'Dashboard',
         url: '/dashboard/overview',
         icon: 'dashboard',
-        isActive: false,
         shortcut: ['d', 'd'],
         items: []
-      },
+      }
+    ]
+  },
+  {
+    label: 'Govern',
+    items: [
       {
-        title: 'Workspaces',
-        url: '/dashboard/workspaces',
-        icon: 'workspace',
-        isActive: false,
+        title: 'AI Systems',
+        url: '/dashboard/systems',
+        icon: 'shield',
+        shortcut: ['s', 's'],
         items: []
       },
       {
-        title: 'Teams',
-        url: '/dashboard/workspaces/team',
+        title: 'Agents',
+        url: '/dashboard/agents',
+        icon: 'robot',
+        shortcut: ['a', 'a'],
+        items: []
+      },
+      {
+        title: 'Obligations',
+        url: '/dashboard/obligations',
+        icon: 'checklist',
+        shortcut: ['o', 'o'],
+        items: []
+      },
+      {
+        title: 'Regulations',
+        url: '/dashboard/regulations',
+        icon: 'regulations',
+        shortcut: ['r', 'r'],
+        items: []
+      }
+    ]
+  },
+  {
+    label: 'Assure',
+    items: [
+      {
+        title: 'Evaluations',
+        url: '/dashboard/evaluations',
+        icon: 'gauge',
+        shortcut: ['e', 'e'],
+        items: []
+      },
+      {
+        title: 'Monitoring',
+        url: '/dashboard/monitoring',
+        icon: 'activity',
+        shortcut: ['m', 'm'],
+        items: []
+      },
+      {
+        title: 'Alerts',
+        url: '/dashboard/alerts',
+        icon: 'notification',
+        shortcut: ['l', 'l'],
+        items: []
+      }
+    ]
+  },
+  {
+    label: 'Prove',
+    items: [
+      {
+        title: 'Documents',
+        url: '/dashboard/documents',
+        icon: 'page',
+        shortcut: ['c', 'c'],
+        items: []
+      },
+      {
+        title: 'Audit Log',
+        url: '/dashboard/audit',
+        icon: 'fingerprint',
+        shortcut: ['g', 'g'],
+        items: []
+      }
+    ]
+  },
+  {
+    label: 'Workspace',
+    items: [
+      {
+        title: 'Team',
+        url: '/dashboard/team',
         icon: 'teams',
-        isActive: false,
         items: [],
         access: { requireOrg: true }
       },
       {
-        title: 'Product',
-        url: '/dashboard/product',
-        icon: 'product',
-        shortcut: ['p', 'p'],
-        isActive: false,
+        title: 'Settings',
+        url: '/dashboard/settings',
+        icon: 'settings',
         items: []
       },
       {
-        title: 'Users',
-        url: '/dashboard/users',
-        icon: 'teams',
-        shortcut: ['u', 'u'],
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Kanban',
-        url: '/dashboard/kanban',
-        icon: 'kanban',
-        shortcut: ['k', 'k'],
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Chat',
-        url: '/dashboard/chat',
-        icon: 'chat',
-        shortcut: ['c', 'c'],
-        isActive: false,
-        items: []
-      }
-    ]
-  },
-  {
-    label: 'Elements',
-    items: [
-      {
-        title: 'Forms',
-        url: '#',
-        icon: 'forms',
-        isActive: true,
-        items: [
-          {
-            title: 'Basic Form',
-            url: '/dashboard/forms/basic',
-            icon: 'forms',
-            shortcut: ['f', 'f']
-          },
-          {
-            title: 'Multi-Step Form',
-            url: '/dashboard/forms/multi-step',
-            icon: 'forms'
-          },
-          {
-            title: 'Sheet & Dialog',
-            url: '/dashboard/forms/sheet-form',
-            icon: 'forms'
-          },
-          {
-            title: 'Advanced Patterns',
-            url: '/dashboard/forms/advanced',
-            icon: 'forms'
-          }
-        ]
-      },
-      {
-        title: 'React Query',
-        url: '/dashboard/react-query',
-        icon: 'code',
-        isActive: false,
-        items: []
-      },
-      {
-        title: 'Icons',
-        url: '/dashboard/elements/icons',
-        icon: 'palette',
-        isActive: false,
-        items: []
-      }
-    ]
-  },
-  {
-    label: '',
-    items: [
-      {
-        title: 'Pro',
-        url: '#',
-        icon: 'pro',
-        isActive: true,
-        items: [
-          {
-            title: 'Exclusive',
-            url: '/dashboard/exclusive',
-            icon: 'exclusive',
-            shortcut: ['e', 'e']
-          }
-        ]
-      },
-      {
-        title: 'Account',
-        url: '#',
-        icon: 'account',
-        isActive: true,
-        items: [
-          {
-            title: 'Profile',
-            url: '/dashboard/profile',
-            icon: 'profile',
-            shortcut: ['m', 'm']
-          },
-          {
-            title: 'Notifications',
-            url: '/dashboard/notifications',
-            icon: 'notification',
-            shortcut: ['n', 'n']
-          },
-          {
-            title: 'Billing',
-            url: '/dashboard/billing',
-            icon: 'billing',
-            shortcut: ['b', 'b'],
-            access: { requireOrg: true }
-          },
-          {
-            title: 'Login',
-            shortcut: ['l', 'l'],
-            url: '/',
-            icon: 'login'
-          }
-        ]
+        title: 'Billing',
+        url: '/dashboard/billing',
+        icon: 'billing',
+        shortcut: ['b', 'b'],
+        items: [],
+        access: { requireOrg: true }
       }
     ]
   }
