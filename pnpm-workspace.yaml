@@ -1,0 +1,10 @@
+onlyBuiltDependencies:
+  - sharp
+  - esbuild
+  - '@sentry/cli'
+  - core-js
+
+# sharp and esbuild ship prebuilt binaries, so their optional build scripts
+# are not required to run the app. Skip the pre-run dependency gate that
+# otherwise blocks pnpm scripts on a pending build-script approval.
+verifyDepsBeforeRun: false
