@@ -4,7 +4,9 @@ import { db } from '@/db';
 import { agents, evaluationCases, evaluations } from '@/db/schema';
 import type { TenantContext } from '@/lib/auth/tenant';
 import { badRequest, notFound } from '@/lib/api/errors';
+import { pseudoEmbedding } from '@/lib/embedding-fallback';
 import { appendAuditLog } from './audit';
+import { isEvalsServiceConfigured, runOnEvalsService } from './evals-client';
 import { paginated, paginationSchema, pageOffset } from './shared';
 
 const evaluationTypeEnum = z.enum([
@@ -91,5 +93,81 @@ export async function createEvaluation(ctx: TenantContext, input: CreateEvaluati
     resourceId: row.id,
     data: { type: row.type, agentId: agent.id }
   });
+
+  // Run it right away when the evals service is configured so results are ready.
+  if (isEvalsServiceConfigured()) {
+    try {
+      return await runEvaluation(ctx, row.id);
+    } catch (error) {
+      console.error('Evaluation run failed, leaving it queued', error);
+    }
+  }
+
   return row;
+}
+
+/** Runs a queued evaluation on the evals service and stores the result. */
+export async function runEvaluation(ctx: TenantContext, id: string) {
+  const evaluation = await db.query.evaluations.findFirst({
+    where: and(eq(evaluations.id, id), eq(evaluations.organizationId, ctx.organizationId))
+  });
+  if (!evaluation) throw notFound('That evaluation does not exist.');
+
+  const agent = await db.query.agents.findFirst({ where: eq(agents.id, evaluation.agentId) });
+  if (!agent) throw notFound('The agent for that evaluation is gone.');
+
+  await db
+    .update(evaluations)
+    .set({ status: 'running', startedAt: new Date() })
+    .where(eq(evaluations.id, id));
+
+  const result = await runOnEvalsService({
+    type: evaluation.type,
+    agentName: agent.name,
+    systemPrompt: agent.systemPrompt,
+    model: agent.modelName,
+    threshold: evaluation.threshold
+  });
+
+  const [updated] = await db
+    .update(evaluations)
+    .set({
+      status: result.passed ? 'passed' : 'failed',
+      score: result.score,
+      passed: result.passed,
+      summary: result.summary,
+      details: { cases: result.cases.length },
+      modelUsed: result.model_used,
+      completedAt: new Date()
+    })
+    .where(eq(evaluations.id, id))
+    .returning();
+
+  if (result.cases.length) {
+    await db.insert(evaluationCases).values(
+      result.cases.map((testCase) => ({
+        evaluationId: id,
+        organizationId: ctx.organizationId,
+        input: testCase.input,
+        output: testCase.output,
+        expected: testCase.expected ?? null,
+        passed: testCase.passed,
+        score: testCase.score,
+        rationale: testCase.rationale,
+        embedding: pseudoEmbedding(testCase.output || testCase.input)
+      }))
+    );
+  }
+
+  await appendAuditLog({
+    organizationId: ctx.organizationId,
+    actorType: ctx.userId ? 'user' : 'system',
+    actorId: ctx.clerkUserId,
+    action: 'evaluation.completed',
+    resourceType: 'evaluation',
+    resourceId: id,
+    data: { type: evaluation.type, score: result.score, passed: result.passed }
+  });
+
+  return updated;
 }

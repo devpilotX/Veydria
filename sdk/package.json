@@ -1,0 +1,18 @@
+{
+  "name": "@agentproof/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for streaming AI agent activity into AgentProof.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "keywords": ["ai", "compliance", "eu-ai-act", "monitoring", "agents"],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
