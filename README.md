@@ -96,6 +96,7 @@ The Python evaluation service lives in `services/evals`. See `services/evals/REA
 | `pnpm dev`         | Start the Next.js dev server                      |
 | `pnpm build`       | Production build                                  |
 | `pnpm start`       | Run the production build                          |
+| `pnpm test`        | Run the unit tests with Vitest                    |
 | `pnpm lint`        | Lint with oxlint                                  |
 | `pnpm format`      | Format with oxfmt                                 |
 | `pnpm db:generate` | Generate a migration from the Drizzle schema      |
@@ -117,6 +118,10 @@ The Next.js app is the base. The dashboard, API route handlers, marketing pages,
 ## Renaming the product
 
 The product name and all brand details live in `src/config/brand.ts`. Change `name` there and it updates across the app, emails, and documents.
+
+## Deployment
+
+See `DEPLOYMENT.md` for the full guide. In short: the web app runs on Vercel or any Node host, the FastAPI evals service runs as a container, and both point at a managed Postgres. Run `pnpm db:migrate` against the production database before the first deploy.
 
 ## Backups
 

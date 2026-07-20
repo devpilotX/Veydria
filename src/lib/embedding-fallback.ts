@@ -13,7 +13,7 @@ export function pseudoEmbedding(text: string, dimensions: number = EMBEDDING_DIM
     seed = Math.imul(seed, 16777619) >>> 0;
   }
 
-  const out = new Array<number>(dimensions);
+  const out: number[] = Array.from({ length: dimensions }, () => 0);
   let x = seed || 1;
   for (let i = 0; i < dimensions; i++) {
     // xorshift32, a small deterministic pseudo random generator.
