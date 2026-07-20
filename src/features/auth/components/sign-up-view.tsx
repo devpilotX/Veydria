@@ -1,4 +1,5 @@
 import { brand } from '@/config/brand';
+import { LogoMark } from '@/components/brand/logo';
 import { cn } from '@/lib/utils';
 import { SignUp as ClerkSignUpForm } from '@clerk/nextjs';
 import { Metadata } from 'next';
@@ -16,8 +17,8 @@ export default function SignUpViewPage() {
       <div className='relative hidden h-full flex-col p-10 lg:flex dark:border-r'>
         <div className='absolute inset-0 bg-sidebar' />
         <div className='text-sidebar-foreground relative z-20 flex items-center gap-2 text-lg font-medium'>
-          <span className='bg-sidebar-primary text-sidebar-primary-foreground flex size-8 items-center justify-center rounded-lg font-semibold'>
-            A
+          <span className='bg-sidebar-primary text-sidebar-primary-foreground flex size-8 items-center justify-center rounded-lg'>
+            <LogoMark className='size-5' />
           </span>
           {brand.name}
         </div>

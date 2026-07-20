@@ -31,13 +31,23 @@ export async function GET(request: Request): Promise<ImageResponse> {
             width: '64px',
             height: '64px',
             borderRadius: '16px',
-            backgroundColor: '#ffffff',
-            color: '#09090b',
-            fontSize: '40px',
-            fontWeight: 700
+            backgroundColor: '#ffffff'
           }}
         >
-          A
+          <svg width='42' height='42' viewBox='0 0 24 24'>
+            <path
+              d='M12 3 L18.5 5.4 L18.5 11 C18.5 15.2 15.6 18.5 12 19.8 C8.4 18.5 5.5 15.2 5.5 11 L5.5 5.4 Z'
+              fill='#09090b'
+            />
+            <path
+              d='M9 11.6 L11.2 13.8 L15 9.4'
+              fill='none'
+              stroke='#ffffff'
+              strokeWidth='2.2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
         </div>
         <div style={{ color: '#ffffff', fontSize: '36px', fontWeight: 600 }}>{brand.name}</div>
       </div>
