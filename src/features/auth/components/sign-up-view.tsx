@@ -45,17 +45,11 @@ export default function SignUpViewPage() {
           <ClerkSignUpForm />
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By continuing, you agree to our{' '}
-            <Link
-              href='/terms-of-service'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <Link href='/terms' className='hover:text-primary underline underline-offset-4'>
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link
-              href='/privacy-policy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <Link href='/privacy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </Link>
             .
