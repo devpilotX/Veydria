@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/brand/logo';
 import { brand } from '@/config/brand';
 import { headerNav } from '@/config/marketing';
 
@@ -7,11 +8,8 @@ export function MarketingHeader() {
   return (
     <header className='border-border/60 bg-background/80 sticky top-0 z-40 border-b backdrop-blur'>
       <div className='mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6'>
-        <Link href='/' className='flex items-center gap-2 font-semibold'>
-          <span className='bg-foreground text-background flex size-7 items-center justify-center rounded-md text-sm font-bold'>
-            A
-          </span>
-          {brand.name}
+        <Link href='/' aria-label={`${brand.name} home`}>
+          <Logo />
         </Link>
 
         <nav className='hidden items-center gap-6 md:flex'>

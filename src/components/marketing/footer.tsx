@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from '@/components/brand/logo';
 import { brand } from '@/config/brand';
 import { footerGroups } from '@/config/marketing';
 
@@ -9,11 +10,8 @@ export function MarketingFooter() {
       <div className='mx-auto max-w-6xl px-4 py-12 sm:px-6'>
         <div className='grid gap-8 md:grid-cols-5'>
           <div className='md:col-span-1'>
-            <Link href='/' className='flex items-center gap-2 font-semibold'>
-              <span className='bg-foreground text-background flex size-7 items-center justify-center rounded-md text-sm font-bold'>
-                A
-              </span>
-              {brand.name}
+            <Link href='/' aria-label={`${brand.name} home`}>
+              <Logo />
             </Link>
             <p className='text-muted-foreground mt-3 text-sm'>{brand.tagline}.</p>
           </div>
