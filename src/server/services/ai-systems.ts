@@ -81,25 +81,6 @@ export async function getAiSystem(ctx: TenantContext, id: string) {
   return row;
 }
 
-export async function createAiSystem(ctx: TenantContext, input: CreateAiSystemInput) {
-  const [row] = await db
-    .insert(aiSystems)
-    .values({ ...input, organizationId: ctx.organizationId, createdByUserId: ctx.userId })
-    .returning();
-
-  await appendAuditLog({
-    organizationId: ctx.organizationId,
-    actorType: ctx.userId ? 'user' : 'system',
-    actorId: ctx.clerkUserId,
-    action: 'ai_system.created',
-    resourceType: 'ai_system',
-    resourceId: row.id,
-    data: { name: row.name }
-  });
-
-  return row;
-}
-
 export async function updateAiSystem(ctx: TenantContext, id: string, input: UpdateAiSystemInput) {
   await getAiSystem(ctx, id);
 

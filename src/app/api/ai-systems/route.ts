@@ -2,11 +2,11 @@ import { NextRequest } from 'next/server';
 import { created, handleRoute, ok } from '@/lib/api/handler';
 import { requireRole, requireTenant } from '@/lib/auth/require';
 import {
-  createAiSystem,
   createAiSystemSchema,
   listAiSystems,
   listAiSystemsSchema
 } from '@/server/services/ai-systems';
+import { createAndClassifyAiSystem } from '@/server/services/classification';
 
 export async function GET(request: NextRequest) {
   return handleRoute(async () => {
@@ -22,6 +22,8 @@ export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
     const input = createAiSystemSchema.parse(await request.json());
-    return created(await createAiSystem(ctx, input));
+    // Create and classify in one transaction so a system never lands without
+    // its risk tier and obligations. Any failure surfaces to the caller.
+    return created(await createAndClassifyAiSystem(ctx, input));
   });
 }
