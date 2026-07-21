@@ -64,7 +64,7 @@ export function OrgSwitcher() {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size='lg' disabled>
+          <SidebarMenuButton size='lg' aria-label='Organizations' disabled>
             <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg'>
               <Icons.galleryVerticalEnd className='size-4' />
             </div>
@@ -91,6 +91,7 @@ export function OrgSwitcher() {
         <SidebarMenuItem>
           <SidebarMenuButton
             size='lg'
+            aria-label='Create organization'
             onClick={() => router.push('/dashboard/workspaces')}
             className='data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground'
           >
@@ -135,10 +136,12 @@ export function OrgSwitcher() {
             render={
               <SidebarMenuButton
                 size='lg'
+                aria-label='Switch organization'
                 className='data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground'
               />
             }
           >
+            <span className='sr-only'>Switch organization</span>
             <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg'>
               {displayOrganization.hasImage && displayOrganization.imageUrl ? (
                 <Image

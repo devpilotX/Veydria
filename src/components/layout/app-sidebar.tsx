@@ -119,11 +119,13 @@ export default function AppSidebar() {
                 render={
                   <SidebarMenuButton
                     size='lg'
+                    aria-label='Open account menu'
                     className='data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground'
                   />
                 }
               >
                 {user && <UserAvatarProfile className='h-8 w-8 rounded-lg' showInfo user={user} />}
+                <span className='sr-only'>Account menu</span>
                 <Icons.chevronsDown className='ml-auto size-4' />
               </DropdownMenuTrigger>
               <DropdownMenuContent
