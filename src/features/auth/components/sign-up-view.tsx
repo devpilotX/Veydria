@@ -27,15 +27,11 @@ export default function SignUpViewPage() {
           )}
         />
         <div className='text-sidebar-foreground relative z-20 mt-auto'>
-          <blockquote className='space-y-2'>
-            <p className='text-lg'>
-              &ldquo;We connected our agents on a Tuesday and had a draft Annex IV pack by Thursday.
-              That would have taken our team a month by hand.&rdquo;
-            </p>
-            <footer className='text-sidebar-foreground/70 text-sm'>
-              Marcus Feld, CTO at Northbeam Health
-            </footer>
-          </blockquote>
+          <p className='text-2xl font-semibold'>Proof for every AI decision.</p>
+          <p className='text-sidebar-foreground/70 mt-3 text-sm'>
+            Connect your agents, get the exact obligations that apply, and generate the risk
+            assessments and technical files auditors ask for.
+          </p>
         </div>
       </div>
       <div className='flex h-full items-center justify-center p-4 lg:p-8'>

@@ -58,15 +58,14 @@ export default function ContactPage() {
 
       <section className='mt-12'>
         <h2 className='text-xl font-semibold'>Mailing address</h2>
-        <address className='text-muted-foreground mt-3 text-sm not-italic'>
-          {brand.legalName}
-          <br />
-          {brand.address.line1}, {brand.address.line2}
-          <br />
-          {brand.address.city}, {brand.address.region} {brand.address.postalCode}
-          <br />
-          {brand.address.country}
-        </address>
+        <p className='text-muted-foreground mt-3 text-sm'>
+          We handle correspondence by email while we finalize a registered address. For legal
+          notices, email{' '}
+          <a href={`mailto:${brand.contact.legal}`} className='text-foreground underline'>
+            {brand.contact.legal}
+          </a>
+          .
+        </p>
       </section>
     </div>
   );

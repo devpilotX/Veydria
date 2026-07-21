@@ -7,8 +7,9 @@
 
 export const brand = {
   name: 'Veydria',
-  // Legal entity used in contracts, invoices, and legal pages.
-  legalName: 'Veydria, Inc.',
+  // Operating name used in legal pages and documents. Not a registered entity
+  // claim, set this to the incorporated name once the company is registered.
+  legalName: 'Veydria',
   // One line that explains what we do, used in hero sections and meta tags.
   tagline: 'Proof for every AI decision',
   // A fuller description for meta tags and store listings.
@@ -28,15 +29,6 @@ export const brand = {
     security: 'security@veydria.com',
     privacy: 'privacy@veydria.com',
     legal: 'legal@veydria.com'
-  },
-  // Registered address shown on legal pages and invoices.
-  address: {
-    line1: '2261 Market Street',
-    line2: 'Suite 4210',
-    city: 'San Francisco',
-    region: 'CA',
-    postalCode: '94114',
-    country: 'United States'
   }
 } as const;
 

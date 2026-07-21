@@ -156,18 +156,9 @@ export default function PrivacyPage() {
             Questions about privacy? Email{' '}
             <a href={`mailto:${brand.contact.privacy}`} className='text-foreground underline'>
               {brand.contact.privacy}
-            </a>{' '}
-            or write to us:
+            </a>
+            .
           </p>
-          <address className='text-muted-foreground mt-3 text-sm not-italic'>
-            {brand.legalName}
-            <br />
-            {brand.address.line1}, {brand.address.line2}
-            <br />
-            {brand.address.city}, {brand.address.region} {brand.address.postalCode}
-            <br />
-            {brand.address.country}
-          </address>
         </section>
       </div>
     </div>

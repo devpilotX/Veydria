@@ -27,16 +27,11 @@ export default function SignInViewPage() {
           )}
         />
         <div className='text-sidebar-foreground relative z-20 mt-auto'>
-          <blockquote className='space-y-2'>
-            <p className='text-lg'>
-              &ldquo;Our auditors used to ask for six weeks of paperwork. Now we hand them a link.
-              Veydria keeps the risk assessments and audit trail current without us thinking about
-              it.&rdquo;
-            </p>
-            <footer className='text-sidebar-foreground/70 text-sm'>
-              Priya Nadar, Head of Compliance at Ledgerwise
-            </footer>
-          </blockquote>
+          <p className='text-2xl font-semibold'>Proof for every AI decision.</p>
+          <p className='text-sidebar-foreground/70 mt-3 text-sm'>
+            Map your AI systems to the EU AI Act, NIST AI RMF, and ISO 42001, test every agent, and
+            keep an audit ready trail.
+          </p>
         </div>
       </div>
       <div className='flex h-full items-center justify-center p-4 lg:p-8'>
