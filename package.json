@@ -18,6 +18,7 @@
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:push": "drizzle-kit push",
@@ -84,7 +85,10 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@clerk/testing": "^2.2.10",
     "@faker-js/faker": "^9.9.0",
+    "@playwright/test": "^1.61.1",
     "@types/node": "22.10.2",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
