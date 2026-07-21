@@ -34,10 +34,10 @@ export function MarketingFooter() {
           ))}
         </div>
         <div className='border-border/60 text-muted-foreground mt-10 flex flex-col items-start justify-between gap-2 border-t pt-6 text-sm sm:flex-row'>
+          <p>{brand.tagline}.</p>
           <p>
-            {brand.legalName}, {brand.address.city}, {brand.address.region}.
+            Copyright {year} {brand.name}. All rights reserved.
           </p>
-          <p>Copyright {year}. All rights reserved.</p>
         </div>
       </div>
     </footer>
