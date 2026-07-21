@@ -52,4 +52,37 @@ describe('computeAuditHash', () => {
     );
     expect(secondFromTampered).not.toBe(second);
   });
+
+  it('does not depend on data key order, so it survives a JSONB round trip', () => {
+    // The same data written with different key order (top level and nested)
+    // must hash the same, because JSONB does not preserve the written order.
+    const insertionOrder = computeAuditHash(
+      baseInput({
+        data: { count: 18, byFramework: { eu_ai_act: 9, nist_ai_rmf: 5, iso_42001: 4 } }
+      }),
+      secret
+    );
+    const jsonbOrder = computeAuditHash(
+      baseInput({
+        data: { byFramework: { eu_ai_act: 9, iso_42001: 4, nist_ai_rmf: 5 }, count: 18 }
+      }),
+      secret
+    );
+    expect(jsonbOrder).toBe(insertionOrder);
+  });
+
+  it('still separates different data regardless of order', () => {
+    const a = computeAuditHash(baseInput({ data: { a: 1, b: 2 } }), secret);
+    const b = computeAuditHash(baseInput({ data: { a: 1, b: 3 } }), secret);
+    expect(a).not.toBe(b);
+  });
+
+  it('version 1 and version 2 formulas differ when data key order matters', () => {
+    // Unordered keys: version 1 (JSON.stringify) keeps insertion order, version
+    // 2 sorts them, so the two formulas produce different hashes.
+    const unordered = { zulu: 1, alpha: 2 };
+    const v1 = computeAuditHash(baseInput({ data: unordered }), secret, 1);
+    const v2 = computeAuditHash(baseInput({ data: unordered }), secret, 2);
+    expect(v1).not.toBe(v2);
+  });
 });
