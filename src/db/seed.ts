@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { computeAuditHash, getAuditSecret } from '@/lib/audit-hash';
 import { pseudoEmbedding } from '@/lib/embedding-fallback';
+import { seedRegulations as seedRegulationKnowledgeBase } from './seed-regulations';
 import * as schema from '@/db/schema';
 
 /**
@@ -34,203 +35,8 @@ async function reset() {
 }
 
 async function seedRegulations() {
-  const [euRow] = await db
-    .insert(schema.regulations)
-    .values({
-      code: 'eu_ai_act',
-      name: 'EU AI Act',
-      jurisdiction: 'European Union',
-      version: 'Regulation (EU) 2024/1689',
-      summary:
-        'The European Union rulebook for AI. It sorts systems by risk and puts the heaviest duties on high risk uses like hiring and credit.'
-    })
-    .returning();
-
-  const [nistRow] = await db
-    .insert(schema.regulations)
-    .values({
-      code: 'nist_ai_rmf',
-      name: 'NIST AI Risk Management Framework',
-      jurisdiction: 'United States',
-      version: 'AI RMF 1.0',
-      summary:
-        'A voluntary US framework built around four functions: govern, map, measure, and manage. Widely used as a baseline for good practice.'
-    })
-    .returning();
-
-  const [isoRow] = await db
-    .insert(schema.regulations)
-    .values({
-      code: 'iso_42001',
-      name: 'ISO/IEC 42001',
-      jurisdiction: 'International',
-      version: '2023',
-      summary:
-        'The first management system standard for AI. It certifies that an organization runs a documented, audited process for its AI.'
-    })
-    .returning();
-
-  const clauses: Array<{
-    regulationId: string;
-    code: 'eu_ai_act' | 'nist_ai_rmf' | 'iso_42001';
-    ref: string;
-    title: string;
-    text: string;
-    category: (typeof schema.obligationCategory.enumValues)[number];
-  }> = [
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 9',
-      title: 'Risk management system',
-      text: 'Providers of high risk AI systems shall set up, document, and keep a risk management system that runs across the whole lifecycle and is reviewed on a regular basis.',
-      category: 'risk_management'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 10',
-      title: 'Data and data governance',
-      text: 'Training, validation, and testing data must meet quality criteria and be examined for bias that could harm health, safety, or fundamental rights.',
-      category: 'data_governance'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 11',
-      title: 'Technical documentation',
-      text: 'Technical documentation must be written before the system goes to market and kept current, following the template in Annex IV.',
-      category: 'technical_documentation'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 12',
-      title: 'Record keeping',
-      text: 'High risk systems must log events automatically over their lifetime so their behaviour can be traced after the fact.',
-      category: 'record_keeping'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 13',
-      title: 'Transparency and provision of information',
-      text: 'Systems must be built so deployers can read the output correctly, with clear instructions for use.',
-      category: 'transparency'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 14',
-      title: 'Human oversight',
-      text: 'High risk systems must let people oversee them effectively, including the ability to step in or stop the system.',
-      category: 'human_oversight'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 15',
-      title: 'Accuracy, robustness and cybersecurity',
-      text: 'Systems must reach a suitable level of accuracy and hold up against errors and attempts to manipulate them.',
-      category: 'accuracy_robustness'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 17',
-      title: 'Quality management system',
-      text: 'Providers must run a quality management system, written down as policies and procedures.',
-      category: 'quality_management'
-    },
-    {
-      regulationId: euRow.id,
-      code: 'eu_ai_act',
-      ref: 'Article 72',
-      title: 'Post market monitoring',
-      text: 'Providers must gather and review data on how the system performs once it is in use, and act on what they find.',
-      category: 'post_market_monitoring'
-    },
-    {
-      regulationId: nistRow.id,
-      code: 'nist_ai_rmf',
-      ref: 'GOVERN 1.1',
-      title: 'Legal and regulatory requirements understood',
-      text: 'Legal and regulatory requirements that touch the AI system are understood, managed, and documented.',
-      category: 'quality_management'
-    },
-    {
-      regulationId: nistRow.id,
-      code: 'nist_ai_rmf',
-      ref: 'MAP 1.1',
-      title: 'Context is established',
-      text: 'The intended purpose, setting, and expectations for the AI system are understood and written down.',
-      category: 'risk_management'
-    },
-    {
-      regulationId: nistRow.id,
-      code: 'nist_ai_rmf',
-      ref: 'MEASURE 2.1',
-      title: 'Test sets and metrics',
-      text: 'Test sets, metrics, and the tools used are documented and checked for validity.',
-      category: 'accuracy_robustness'
-    },
-    {
-      regulationId: nistRow.id,
-      code: 'nist_ai_rmf',
-      ref: 'MEASURE 2.11',
-      title: 'Fairness and bias are evaluated',
-      text: 'Fairness and bias are evaluated across groups and the results are documented.',
-      category: 'data_governance'
-    },
-    {
-      regulationId: nistRow.id,
-      code: 'nist_ai_rmf',
-      ref: 'MANAGE 1.1',
-      title: 'Risks are prioritized and handled',
-      text: 'Risks are prioritized, responded to, and managed based on their likely impact.',
-      category: 'risk_management'
-    },
-    {
-      regulationId: isoRow.id,
-      code: 'iso_42001',
-      ref: 'Clause 6.1',
-      title: 'Actions to address risks and opportunities',
-      text: 'The organization plans actions to address the risks and opportunities of its AI management system.',
-      category: 'risk_management'
-    },
-    {
-      regulationId: isoRow.id,
-      code: 'iso_42001',
-      ref: 'Clause 8.1',
-      title: 'Operational planning and control',
-      text: 'The organization plans, runs, and controls the processes it needs to meet its AI requirements.',
-      category: 'quality_management'
-    },
-    {
-      regulationId: isoRow.id,
-      code: 'iso_42001',
-      ref: 'Clause 9.1',
-      title: 'Monitoring, measurement, analysis',
-      text: 'The organization decides what to monitor and measure for its AI management system and how to do it.',
-      category: 'post_market_monitoring'
-    },
-    {
-      regulationId: isoRow.id,
-      code: 'iso_42001',
-      ref: 'Annex A.6.2',
-      title: 'AI system impact assessment',
-      text: 'The organization assesses how the AI system affects individuals and groups before and during use.',
-      category: 'human_oversight'
-    }
-  ];
-
-  await db.insert(schema.regulationClauses).values(
-    clauses.map((clause) => ({
-      ...clause,
-      embedding: pseudoEmbedding(`${clause.ref} ${clause.title} ${clause.text}`)
-    }))
-  );
-
+  await seedRegulationKnowledgeBase(db);
+  const clauses = await db.select().from(schema.regulationClauses);
   return { clauses };
 }
 
@@ -467,7 +273,7 @@ async function main() {
       clauseRef: clause.ref,
       title: `${clause.title} for ${system.name}`,
       description: clause.text,
-      category: clause.category,
+      category: clause.category ?? 'risk_management',
       severity: (clause.category === 'risk_management' ? 'high' : 'medium') as 'high' | 'medium',
       status: statusCycle[(index + systemIndex) % statusCycle.length],
       evidenceSummary:

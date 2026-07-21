@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 import { cosineSimilarityFunctionSql } from './vector';
+import { seedRegulations } from './seed-regulations';
 
 // Blocks updates and deletes on audit_log rows so the hash chain cannot be
 // altered in place. TRUNCATE is not affected, which lets the seed reset data.
@@ -37,6 +38,14 @@ async function main() {
 
   console.log('Installing audit log immutability trigger...');
   await sql.unsafe(auditImmutabilitySql);
+
+  console.log('Seeding the regulation knowledge base...');
+  const kb = await seedRegulations(db);
+  console.log(
+    kb.seeded
+      ? `Seeded ${kb.clauses} regulation clauses.`
+      : 'Regulation knowledge base already present.'
+  );
 
   console.log('Migration complete.');
   await sql.end();
