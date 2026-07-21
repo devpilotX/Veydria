@@ -1,10 +1,10 @@
-# AgentProof
+# Veydria
 
-AgentProof is a B2B platform that helps teams govern, test, and document their AI agents against the EU AI Act, the NIST AI Risk Management Framework, and ISO 42001.
+Veydria is a B2B platform that helps teams govern, test, and document their AI agents against the EU AI Act, the NIST AI Risk Management Framework, and ISO 42001.
 
 It does five jobs:
 
-1. Discover. Connect your AI systems and agents through API keys, a TypeScript SDK, or an MCP server. AgentProof builds an inventory of every model, agent, prompt, and data flow.
+1. Discover. Connect your AI systems and agents through API keys, a TypeScript SDK, or an MCP server. Veydria builds an inventory of every model, agent, prompt, and data flow.
 2. Classify. A rules engine maps each system to the regulations that apply and returns the exact obligations, including its EU AI Act risk tier.
 3. Evaluate. Automated tests score each agent for bias, hallucination, prompt injection, safety, and policy violations.
 4. Monitor. In production an SDK streams every agent action into an append only, hash chained audit log. Anomalies and policy breaches raise alerts.
@@ -29,7 +29,7 @@ Charts and metric cards are built on the starter's shadcn Card primitives and Re
 
 ## Tools installed for this project
 
-These are the exact versions used while building AgentProof, so the setup is reproducible.
+These are the exact versions used while building Veydria, so the setup is reproducible.
 
 | Tool       | Version        | Notes                                             |
 | ---------- | -------------- | ------------------------------------------------- |
@@ -128,13 +128,13 @@ See `DEPLOYMENT.md` for the full guide. In short: the web app runs on Vercel or 
 Push to the remote regularly. For a full local snapshot, use git bundle from git bash:
 
 ```bash
-git bundle create agentproof-backup.bundle --all
+git bundle create veydria-backup.bundle --all
 ```
 
 Restore from a bundle with:
 
 ```bash
-git clone agentproof-backup.bundle restored-agentproof
+git clone veydria-backup.bundle restored-veydria
 ```
 
 ## License

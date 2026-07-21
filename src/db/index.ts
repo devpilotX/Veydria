@@ -10,12 +10,12 @@ if (!connectionString) {
 
 // Reuse a single connection across hot reloads in development so we do not
 // exhaust Postgres connections.
-const globalForDb = globalThis as unknown as { agentproofPg?: ReturnType<typeof postgres> };
+const globalForDb = globalThis as unknown as { veydriaPg?: ReturnType<typeof postgres> };
 
-const client = globalForDb.agentproofPg ?? postgres(connectionString, { max: 10 });
+const client = globalForDb.veydriaPg ?? postgres(connectionString, { max: 10 });
 
 if (process.env.NODE_ENV !== 'production') {
-  globalForDb.agentproofPg = client;
+  globalForDb.veydriaPg = client;
 }
 
 export const db = drizzle(client, { schema, casing: 'snake_case' });

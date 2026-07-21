@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Contact',
   description:
-    'Reach the AgentProof team. Talk to sales about plans and demos, get help from support, or report a security issue.',
+    'Reach the Veydria team. Talk to sales about plans and demos, get help from support, or report a security issue.',
   path: '/contact'
 });
 

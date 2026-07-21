@@ -36,7 +36,7 @@ export const blogPosts: BlogPost[] = [
       { type: 'h2', text: 'Write down your reasoning' },
       {
         type: 'p',
-        text: 'Whatever tier you land on, record why. An auditor will ask. A short paragraph that points to the specific Annex III entry, or explains why none apply, is usually enough. AgentProof does this step for you and keeps the reasoning next to the system.'
+        text: 'Whatever tier you land on, record why. An auditor will ask. A short paragraph that points to the specific Annex III entry, or explains why none apply, is usually enough. Veydria does this step for you and keeps the reasoning next to the system.'
       }
     ]
   },
@@ -66,7 +66,7 @@ export const blogPosts: BlogPost[] = [
       { type: 'h2', text: 'What to capture' },
       {
         type: 'p',
-        text: 'Record who or what acted, what they did, when, and the data involved. Keep it append only. AgentProof streams agent activity into a chain like this and lets you verify it on demand.'
+        text: 'Record who or what acted, what they did, when, and the data involved. Keep it append only. Veydria streams agent activity into a chain like this and lets you verify it on demand.'
       }
     ]
   }

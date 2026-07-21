@@ -17,7 +17,7 @@ export async function GET(request: Request): Promise<ImageResponse> {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: '#09090b',
+        backgroundColor: '#111C4E',
         padding: '80px',
         fontFamily: 'sans-serif'
       }}
@@ -34,18 +34,17 @@ export async function GET(request: Request): Promise<ImageResponse> {
             backgroundColor: '#ffffff'
           }}
         >
-          <svg width='42' height='42' viewBox='0 0 24 24'>
-            <path
-              d='M12 3 L18.5 5.4 L18.5 11 C18.5 15.2 15.6 18.5 12 19.8 C8.4 18.5 5.5 15.2 5.5 11 L5.5 5.4 Z'
-              fill='#09090b'
-            />
-            <path
-              d='M9 11.6 L11.2 13.8 L15 9.4'
-              fill='none'
-              stroke='#ffffff'
-              strokeWidth='2.2'
-              strokeLinecap='round'
-              strokeLinejoin='round'
+          <svg width='46' height='46' viewBox='0 0 64 64'>
+            <path fill='#111C4E' d='M7 8h13.25L32 36.4 25.12 54 7 8Z' />
+            <path fill='#2457E6' d='M43.75 8H57L38.88 54 32 36.4 43.75 8Z' />
+            <rect
+              x='27.1'
+              y='31.5'
+              width='9.8'
+              height='9.8'
+              rx='2.2'
+              transform='rotate(45 32 36.4)'
+              fill='#F4A62A'
             />
           </svg>
         </div>

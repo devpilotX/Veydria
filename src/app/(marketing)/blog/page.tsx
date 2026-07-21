@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Blog',
   description:
-    'Plain writing on AI compliance: how to classify systems under the EU AI Act, why audit logs matter, and what we learn building AgentProof.',
+    'Plain writing on AI compliance: how to classify systems under the EU AI Act, why audit logs matter, and what we learn building Veydria.',
   path: '/blog'
 });
 
@@ -25,7 +25,7 @@ export default function BlogPage() {
     <div className='mx-auto max-w-3xl px-4 py-16 sm:px-6'>
       <h1 className='text-3xl font-semibold tracking-tight sm:text-4xl'>Blog</h1>
       <p className='text-muted-foreground mt-4 text-lg text-pretty'>
-        Notes on AI compliance from the team building AgentProof. We keep it practical and skip the
+        Notes on AI compliance from the team building Veydria. We keep it practical and skip the
         hype.
       </p>
 

@@ -1,14 +1,14 @@
 /**
- * AgentProof TypeScript SDK.
+ * Veydria TypeScript SDK.
  *
- * A tiny, dependency free client for streaming agent activity into AgentProof.
+ * A tiny, dependency free client for streaming agent activity into Veydria.
  * Works in Node 18 and newer and in any runtime with a global fetch.
  *
  * Quick start:
  *
- *   import { AgentProof } from '@agentproof/sdk';
+ *   import { Veydria } from '@veydria/sdk';
  *
- *   const ap = new AgentProof({ apiKey: process.env.AGENTPROOF_API_KEY! });
+ *   const ap = new Veydria({ apiKey: process.env.VEYDRIA_API_KEY! });
  *   await ap.track({
  *     agentExternalId: 'support-copilot',
  *     input: userMessage,
@@ -26,9 +26,9 @@ export type AgentEventType =
   | 'decision';
 
 export interface AgentEvent {
-  /** The AgentProof agent id, if you have it. */
+  /** The Veydria agent id, if you have it. */
   agentId?: string;
-  /** Your own id for the agent, matched to the one registered in AgentProof. */
+  /** Your own id for the agent, matched to the one registered in Veydria. */
   agentExternalId?: string;
   eventType?: AgentEventType;
   input?: string;
@@ -42,9 +42,9 @@ export interface AgentEvent {
   occurredAt?: string | Date;
 }
 
-export interface AgentProofOptions {
+export interface VeydriaOptions {
   apiKey: string;
-  /** Defaults to https://app.agentproof.io */
+  /** Defaults to https://app.veydria.com */
   baseUrl?: string;
   /** Optional custom fetch, useful for tests. */
   fetch?: typeof fetch;
@@ -55,24 +55,24 @@ export interface IngestResult {
   flagged: number;
 }
 
-export class AgentProofError extends Error {
+export class VeydriaError extends Error {
   readonly status: number;
   constructor(status: number, message: string) {
     super(message);
-    this.name = 'AgentProofError';
+    this.name = 'VeydriaError';
     this.status = status;
   }
 }
 
-export class AgentProof {
+export class Veydria {
   private readonly apiKey: string;
   private readonly baseUrl: string;
   private readonly fetchImpl: typeof fetch;
 
-  constructor(options: AgentProofOptions) {
-    if (!options.apiKey) throw new Error('AgentProof needs an apiKey.');
+  constructor(options: VeydriaOptions) {
+    if (!options.apiKey) throw new Error('Veydria needs an apiKey.');
     this.apiKey = options.apiKey;
-    this.baseUrl = (options.baseUrl ?? 'https://app.agentproof.io').replace(/\/$/, '');
+    this.baseUrl = (options.baseUrl ?? 'https://app.veydria.com').replace(/\/$/, '');
     const resolvedFetch = options.fetch ?? globalThis.fetch;
     if (!resolvedFetch) {
       throw new Error('No fetch available. Pass options.fetch on older runtimes.');
@@ -106,11 +106,11 @@ export class AgentProof {
 
     if (!response.ok) {
       const text = await response.text().catch(() => '');
-      throw new AgentProofError(response.status, text || `Ingest failed with ${response.status}`);
+      throw new VeydriaError(response.status, text || `Ingest failed with ${response.status}`);
     }
 
     return (await response.json()) as IngestResult;
   }
 }
 
-export default AgentProof;
+export default Veydria;

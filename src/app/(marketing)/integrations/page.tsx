@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Integrations',
   description:
-    'AgentProof connects to the models, billing, auth, and data tools you already run: OpenAI, Anthropic, Google, Langfuse, Stripe, Clerk, Resend, PostHog, Postgres, and more.',
+    'Veydria connects to the models, billing, auth, and data tools you already run: OpenAI, Anthropic, Google, Langfuse, Stripe, Clerk, Resend, PostHog, Postgres, and more.',
   path: '/integrations'
 });
 
@@ -78,8 +78,8 @@ export default function IntegrationsPage() {
       <div className='max-w-3xl'>
         <h1 className='text-3xl font-semibold tracking-tight sm:text-4xl'>Integrations</h1>
         <p className='text-muted-foreground mt-4 text-lg text-pretty'>
-          AgentProof fits the tools you already run. Connect your models through one gateway, keep
-          your data in Postgres, and wire up billing, auth, and alerts without leaving the workflow.
+          Veydria fits the tools you already run. Connect your models through one gateway, keep your
+          data in Postgres, and wire up billing, auth, and alerts without leaving the workflow.
         </p>
       </div>
 

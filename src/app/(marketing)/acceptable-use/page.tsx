@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Acceptable Use Policy',
   description:
-    'The rules for using AgentProof, including prohibited uses and prohibited AI practices.',
+    'The rules for using Veydria, including prohibited uses and prohibited AI practices.',
   path: '/acceptable-use'
 });
 

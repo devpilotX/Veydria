@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Data Processing Addendum',
   description:
-    'How AgentProof processes personal data on behalf of customers as a processor under data protection law.',
+    'How Veydria processes personal data on behalf of customers as a processor under data protection law.',
   path: '/dpa'
 });
 

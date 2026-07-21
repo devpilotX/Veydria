@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Security',
   description:
-    'How AgentProof handles your data: secrets in environment variables, encryption in transit, a hash chained audit log, tenant isolation, and role based access.',
+    'How Veydria handles your data: secrets in environment variables, encryption in transit, a hash chained audit log, tenant isolation, and role based access.',
   path: '/security'
 });
 

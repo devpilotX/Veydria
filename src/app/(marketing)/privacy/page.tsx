@@ -4,8 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Privacy Policy',
-  description:
-    'What personal data AgentProof collects, why we process it, and the choices you have.',
+  description: 'What personal data Veydria collects, why we process it, and the choices you have.',
   path: '/privacy'
 });
 

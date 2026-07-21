@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Cookie Policy',
-  description: 'The cookies AgentProof uses, why we use them, and how you can control them.',
+  description: 'The cookies Veydria uses, why we use them, and how you can control them.',
   path: '/cookies'
 });
 

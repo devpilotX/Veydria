@@ -1,4 +1,4 @@
-# Multi stage build for the AgentProof web app using pnpm and Next standalone.
+# Multi stage build for the Veydria web app using pnpm and Next standalone.
 
 ARG NODE_VERSION=24-slim
 

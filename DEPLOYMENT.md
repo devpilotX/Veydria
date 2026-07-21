@@ -1,6 +1,6 @@
-# Deploying AgentProof
+# Deploying Veydria
 
-AgentProof has two deployable pieces:
+Veydria has two deployable pieces:
 
 1. The Next.js web app (dashboard, API routes, marketing, legal). Runs well on Vercel, or anywhere that runs a Node server.
 2. The Python FastAPI evaluation service in `services/evals`. Runs as a container on Fly, Render, Cloud Run, Railway, or ECS.
@@ -53,8 +53,8 @@ Build and run the container:
 
 ```bash
 cd services/evals
-docker build -t agentproof-evals .
-docker run -p 8000:8000 -e EVALS_SERVICE_API_KEY=choose-a-strong-key agentproof-evals
+docker build -t veydria-evals .
+docker run -p 8000:8000 -e EVALS_SERVICE_API_KEY=choose-a-strong-key veydria-evals
 ```
 
 Deploy that image to your container host, then set two variables on the web app:
@@ -97,7 +97,7 @@ The web app is on http://localhost:3000 and the evals service on http://localhos
 Keep a snapshot before large releases:
 
 ```bash
-git bundle create agentproof-backup.bundle --all
+git bundle create veydria-backup.bundle --all
 ```
 
 Managed Postgres providers offer point in time restore. Turn it on for production.

@@ -1,1 +1,1 @@
-"""AgentProof evaluation service package."""
+"""Veydria evaluation service package."""
