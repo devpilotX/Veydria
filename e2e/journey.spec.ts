@@ -62,7 +62,14 @@ test('a fresh org runs the full compliance journey through the UI', async ({ pag
   // 3. Run an evaluation with a strict pass mark so it falls below threshold.
   await page.getByLabel('Test').selectOption('bias');
   await page.getByLabel('Pass mark').fill('99');
-  await page.getByRole('button', { name: 'Run evaluation' }).click();
+  await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.url().includes('/api/evaluations') && response.request().method() === 'POST',
+      { timeout: 90_000 }
+    ),
+    page.getByRole('button', { name: 'Run evaluation' }).click()
+  ]);
   await expect(page).toHaveURL(/\/dashboard\/evaluations\/[0-9a-f-]+/);
   await expect(page.getByRole('heading', { name: /evaluation/i })).toBeVisible();
   await expect(page.getByText('Pass mark 99')).toBeVisible();
