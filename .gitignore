@@ -8,32 +8,34 @@ package-lock.json
 yarn.lock
 bun.lock
 
-# testing
+# testing and coverage
 /coverage
 /playwright-report
 /test-results
+/.nyc_output
 
 # next.js
 /.next/
 /out/
 
-# production
+# production build
 /build
 
 # misc
 .DS_Store
 *.pem
 
-# debug
+# logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files, but keep the committed example
+# local env files, but keep the committed examples
 .env
-.env*.local
-.env.production
+.env.*
 !.env.example
+!.env.production.example
 
 # vercel
 .vercel
@@ -42,7 +44,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# editors and local tooling
 .idea/
+.kiro/
+
 # clerk configuration (can include secrets)
 /.clerk/
 
@@ -50,7 +55,7 @@ next-env.d.ts
 .cursorrules
 /memory-bank
 
-# Sentry Config File
+# Sentry config file
 .env.sentry-build-plugin
 
 # Python evaluation service
@@ -61,5 +66,11 @@ services/evals/__pycache__/
 .pytest_cache/
 services/evals/.env
 
-# local backups
+# local databases
+*.sqlite
+*.sqlite3
+*.db
+/pgdata/
+
+# local git bundle backups
 *.bundle
