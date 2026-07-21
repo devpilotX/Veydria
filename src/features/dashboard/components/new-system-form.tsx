@@ -39,11 +39,9 @@ export function NewSystemForm() {
         const data = (await response.json().catch(() => ({}))) as { error?: string };
         throw new Error(data.error ?? 'Could not create the system.');
       }
-      const system = (await response.json()) as { id: string };
-      // Classify right away so the obligations are ready when the page opens.
-      await fetch(`/api/ai-systems/${system.id}/classify`, { method: 'POST' }).catch(() => null);
+      const result = (await response.json()) as { id: string };
       toast.success('System created and classified.');
-      router.push(`/dashboard/systems/${system.id}`);
+      router.push(`/dashboard/systems/${result.id}`);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong.');

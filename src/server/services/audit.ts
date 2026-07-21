@@ -16,6 +16,60 @@ export type AppendAuditInput = {
   data?: Record<string, unknown> | null;
 };
 
+/** The transaction handle drizzle passes to a db.transaction callback. */
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function appendOnTx(tx: Tx, input: AppendAuditInput, secret: string) {
+  await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${input.organizationId}))`);
+
+  const [last] = await tx
+    .select({ seq: auditLog.seq, hash: auditLog.hash })
+    .from(auditLog)
+    .where(eq(auditLog.organizationId, input.organizationId))
+    .orderBy(desc(auditLog.seq))
+    .limit(1);
+
+  const seq = (last?.seq ?? 0) + 1;
+  const prevHash = last?.hash ?? null;
+  const createdAt = new Date();
+
+  const hash = computeAuditHash(
+    {
+      organizationId: input.organizationId,
+      seq,
+      actorType: input.actorType,
+      actorId: input.actorId ?? null,
+      action: input.action,
+      resourceType: input.resourceType ?? null,
+      resourceId: input.resourceId ?? null,
+      data: input.data ?? null,
+      prevHash,
+      createdAt: createdAt.toISOString()
+    },
+    secret
+  );
+
+  const [row] = await tx
+    .insert(auditLog)
+    .values({
+      organizationId: input.organizationId,
+      seq,
+      actorType: input.actorType,
+      actorId: input.actorId ?? null,
+      actorLabel: input.actorLabel ?? null,
+      action: input.action,
+      resourceType: input.resourceType ?? null,
+      resourceId: input.resourceId ?? null,
+      data: input.data ?? null,
+      prevHash,
+      hash,
+      createdAt
+    })
+    .returning();
+
+  return row;
+}
+
 /**
  * Appends one row to an organization's audit chain. An advisory lock keyed by
  * the organization serialises appends so the per organization sequence and the
@@ -23,57 +77,15 @@ export type AppendAuditInput = {
  */
 export async function appendAuditLog(input: AppendAuditInput) {
   const secret = getAuditSecret();
+  return db.transaction((tx) => appendOnTx(tx, input, secret));
+}
 
-  return db.transaction(async (tx) => {
-    await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${input.organizationId}))`);
-
-    const [last] = await tx
-      .select({ seq: auditLog.seq, hash: auditLog.hash })
-      .from(auditLog)
-      .where(eq(auditLog.organizationId, input.organizationId))
-      .orderBy(desc(auditLog.seq))
-      .limit(1);
-
-    const seq = (last?.seq ?? 0) + 1;
-    const prevHash = last?.hash ?? null;
-    const createdAt = new Date();
-
-    const hash = computeAuditHash(
-      {
-        organizationId: input.organizationId,
-        seq,
-        actorType: input.actorType,
-        actorId: input.actorId ?? null,
-        action: input.action,
-        resourceType: input.resourceType ?? null,
-        resourceId: input.resourceId ?? null,
-        data: input.data ?? null,
-        prevHash,
-        createdAt: createdAt.toISOString()
-      },
-      secret
-    );
-
-    const [row] = await tx
-      .insert(auditLog)
-      .values({
-        organizationId: input.organizationId,
-        seq,
-        actorType: input.actorType,
-        actorId: input.actorId ?? null,
-        actorLabel: input.actorLabel ?? null,
-        action: input.action,
-        resourceType: input.resourceType ?? null,
-        resourceId: input.resourceId ?? null,
-        data: input.data ?? null,
-        prevHash,
-        hash,
-        createdAt
-      })
-      .returning();
-
-    return row;
-  });
+/**
+ * Appends inside a transaction the caller already opened, so the audit entry
+ * commits or rolls back together with the change it records.
+ */
+export async function appendAuditLogTx(tx: Tx, input: AppendAuditInput) {
+  return appendOnTx(tx, input, getAuditSecret());
 }
 
 export type ChainVerification = {
