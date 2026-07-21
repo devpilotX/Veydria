@@ -42,7 +42,8 @@ Embeddings are stored as `real[]` columns and search runs through a SQL cosine f
 1. Push the repository to GitHub and import it in Vercel.
 2. Framework preset: Next.js. No custom build command is needed.
 3. Add the environment variables from `.env.example`. At a minimum set `DATABASE_URL` and `NEXT_PUBLIC_APP_URL`. Add Clerk, Stripe, Resend, and provider keys as you enable them.
-4. Deploy. The marketing and legal pages are server rendered and crawlable, and the sitemap is served at `/sitemap.xml`.
+4. Set the production Clerk keys so keyless mode never runs. Put `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (`pk_live_...`) and `CLERK_SECRET_KEY` (`sk_live_...`) from your Clerk production instance into the host environment. With these set, the "Configure your application" keyless widget does not appear, and the dashboard requires a real session.
+5. Deploy. The marketing and legal pages are server rendered and crawlable, and the sitemap is served at `/sitemap.xml`.
 
 For a self hosted Node deploy instead of Vercel, set `BUILD_STANDALONE=true` and use the root `Dockerfile`, which produces a standalone server started with `node server.js`.
 
