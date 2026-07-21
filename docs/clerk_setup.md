@@ -1,6 +1,28 @@
 # Clerk Setup Guide
 
-This guide covers the setup and configuration of Clerk features used in this starter template.
+This guide covers the setup and configuration of Clerk features used in AgentProof.
+
+## API keys and keyless mode
+
+AgentProof reads two Clerk keys from the environment:
+
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (prefixed `pk_test_` in development, `pk_live_` in production)
+- `CLERK_SECRET_KEY` (prefixed `sk_test_` in development, `sk_live_` in production)
+
+When these are empty in local development, Clerk runs in keyless mode and shows a small "Configure your application" widget with temporary keys. That widget is a development convenience only. It never appears once real keys are set, and it never appears in production because production requires real keys.
+
+To move off keyless mode:
+
+1. Create an application in the [Clerk Dashboard](https://dashboard.clerk.com).
+2. From the API keys page, copy the development keys (`pk_test_`, `sk_test_`) for local work and the production keys (`pk_live_`, `sk_live_`) for your deployment.
+3. Set them as environment variables. Locally, put the `pk_test_`/`sk_test_` pair in `.env`. In production, set the `pk_live_`/`sk_live_` pair in your host, for example Vercel project settings.
+4. Restart the app. The keyless widget is gone and Clerk uses your instance.
+
+Notes:
+
+- Production keys only work on the domain you configure in Clerk. They will not work on localhost, so use the development keys for local testing.
+- The local demo opens the dashboard without sign in only when no keys are set and the app is not in production. As soon as keys are present, the dashboard requires a real session again (see `src/proxy.ts`).
+- Never commit real keys. `.env` is gitignored.
 
 ## Clerk Scopes Required
 
