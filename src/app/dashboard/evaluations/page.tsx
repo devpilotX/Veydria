@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import PageContainer from '@/components/layout/page-container';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
@@ -10,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { EvaluationStatusBadge } from '@/components/dashboard/badges';
 import { EmptyState, Pagination } from '@/components/dashboard/empty-state';
+import { Icons } from '@/components/icons';
 import { getDashboardContext } from '@/lib/auth/page';
 import { listEvaluations, listEvaluationsSchema } from '@/server/services/evaluations';
 
@@ -31,6 +34,12 @@ export default async function EvaluationsPage({
     <PageContainer
       pageTitle='Evaluations'
       pageDescription='Automated tests for bias, hallucination, prompt injection, safety, and policy.'
+      pageHeaderAction={
+        <Button render={<Link href='/dashboard/evaluations/new' />}>
+          <Icons.gauge className='h-4 w-4' />
+          Run evaluation
+        </Button>
+      }
     >
       <div className='space-y-4'>
         <form className='flex flex-wrap items-center gap-2'>
@@ -76,7 +85,12 @@ export default async function EvaluationsPage({
                   {items.map((evaluation) => (
                     <TableRow key={evaluation.id}>
                       <TableCell className='font-medium capitalize'>
-                        {evaluation.type.replace(/_/g, ' ')}
+                        <Link
+                          href={`/dashboard/evaluations/${evaluation.id}`}
+                          className='hover:text-primary'
+                        >
+                          {evaluation.type.replace(/_/g, ' ')}
+                        </Link>
                       </TableCell>
                       <TableCell>{evaluation.score ?? '-'}</TableCell>
                       <TableCell className='text-muted-foreground'>
