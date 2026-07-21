@@ -1,7 +1,7 @@
 import { desc, eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { auditLog } from '@/db/schema';
-import { computeAuditHash, getAuditSecret } from '@/lib/audit-hash';
+import { computeAuditHash, CURRENT_HASH_VERSION, getAuditSecret } from '@/lib/audit-hash';
 
 export type AuditActorType = 'user' | 'system' | 'agent' | 'api_key';
 
@@ -46,7 +46,8 @@ async function appendOnTx(tx: Tx, input: AppendAuditInput, secret: string) {
       prevHash,
       createdAt: createdAt.toISOString()
     },
-    secret
+    secret,
+    CURRENT_HASH_VERSION
   );
 
   const [row] = await tx
@@ -63,6 +64,7 @@ async function appendOnTx(tx: Tx, input: AppendAuditInput, secret: string) {
       data: input.data ?? null,
       prevHash,
       hash,
+      hashVersion: CURRENT_HASH_VERSION,
       createdAt
     })
     .returning();
@@ -151,7 +153,8 @@ export async function verifyAuditChain(organizationId: string): Promise<ChainVer
         prevHash: row.prevHash,
         createdAt: row.createdAt.toISOString()
       },
-      secret
+      secret,
+      row.hashVersion
     );
     if (expected !== row.hash) {
       return {

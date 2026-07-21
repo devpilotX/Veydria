@@ -1,0 +1,1 @@
+ALTER TABLE "audit_log" ADD COLUMN "hash_version" integer DEFAULT 2 NOT NULL;

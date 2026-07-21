@@ -2,6 +2,7 @@ import { relations } from 'drizzle-orm';
 import {
   bigint,
   index,
+  integer,
   jsonb,
   pgTable,
   text,
@@ -38,6 +39,9 @@ export const auditLog = pgTable(
     data: jsonb('data').$type<Record<string, unknown>>(),
     prevHash: text('prev_hash'),
     hash: text('hash').notNull(),
+    // The hash formula version this row was signed with, so it can be verified
+    // with the same formula later. See CURRENT_HASH_VERSION in lib/audit-hash.
+    hashVersion: integer('hash_version').notNull().default(2),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
   },
   (table) => [
