@@ -1,4 +1,4 @@
-# AgentProof evaluation service
+# Veydria evaluation service
 
 A FastAPI service that scores an agent for bias, hallucination, prompt injection, safety, and policy violations. The web app calls it over HTTP and stores the result.
 
@@ -47,6 +47,6 @@ The web app points at this service with `EVALS_SERVICE_URL`.
 ## Docker
 
 ```bash
-docker build -t agentproof-evals .
-docker run -p 8000:8000 -e EVALS_SERVICE_API_KEY=change-me agentproof-evals
+docker build -t veydria-evals .
+docker run -p 8000:8000 -e EVALS_SERVICE_API_KEY=change-me veydria-evals
 ```

@@ -17,9 +17,7 @@ export default function SignInViewPage() {
       <div className='relative hidden h-full flex-col p-10 lg:flex dark:border-r'>
         <div className='absolute inset-0 bg-sidebar' />
         <div className='text-sidebar-foreground relative z-20 flex items-center gap-2 text-lg font-medium'>
-          <span className='bg-sidebar-primary text-sidebar-primary-foreground flex size-8 items-center justify-center rounded-lg'>
-            <LogoMark className='size-5' />
-          </span>
+          <LogoMark className='size-8' />
           {brand.name}
         </div>
         <InteractiveGridPattern
@@ -32,8 +30,8 @@ export default function SignInViewPage() {
           <blockquote className='space-y-2'>
             <p className='text-lg'>
               &ldquo;Our auditors used to ask for six weeks of paperwork. Now we hand them a link.
-              AgentProof keeps the risk assessments and audit trail current without us thinking
-              about it.&rdquo;
+              Veydria keeps the risk assessments and audit trail current without us thinking about
+              it.&rdquo;
             </p>
             <footer className='text-sidebar-foreground/70 text-sm'>
               Priya Nadar, Head of Compliance at Ledgerwise

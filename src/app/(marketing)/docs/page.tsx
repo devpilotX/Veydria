@@ -5,17 +5,17 @@ import { buildMetadata, baseUrl } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Docs',
   description:
-    'Quickstart for AgentProof: create an API key, install the TypeScript SDK, track an agent action, connect over MCP, or send events with plain HTTP.',
+    'Quickstart for Veydria: create an API key, install the TypeScript SDK, track an agent action, connect over MCP, or send events with plain HTTP.',
   path: '/docs'
 });
 
-const installExample = `pnpm add @agentproof/sdk`;
+const installExample = `pnpm add @veydria/sdk`;
 
-const trackExample = `import { AgentProof } from '@agentproof/sdk';
+const trackExample = `import { Veydria } from '@veydria/sdk';
 
-const agentproof = new AgentProof({ apiKey: process.env.AGENTPROOF_API_KEY });
+const veydria = new Veydria({ apiKey: process.env.VEYDRIA_API_KEY });
 
-await agentproof.track({
+await veydria.track({
   agentExternalId: 'support-bot',
   input: userMessage,
   output: modelReply
@@ -23,16 +23,16 @@ await agentproof.track({
 
 const mcpExample = `{
   "mcpServers": {
-    "agentproof": {
+    "veydria": {
       "command": "npx",
-      "args": ["-y", "@agentproof/mcp"],
-      "env": { "AGENTPROOF_API_KEY": "your_key_here" }
+      "args": ["-y", "@veydria/mcp"],
+      "env": { "VEYDRIA_API_KEY": "your_key_here" }
     }
   }
 }`;
 
 const ingestExample = `curl -X POST ${baseUrl}/api/ingest \\
-  -H "Authorization: Bearer $AGENTPROOF_API_KEY" \\
+  -H "Authorization: Bearer $VEYDRIA_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
     "agentExternalId": "support-bot",
@@ -58,7 +58,7 @@ export default function DocsPage() {
         <h2 className='text-xl font-semibold'>1. Create an API key</h2>
         <p className='text-muted-foreground mt-2'>
           Open Settings in the dashboard, go to API keys, and create one for the organization you
-          want to track. Copy it once and store it as <code>AGENTPROOF_API_KEY</code> in your
+          want to track. Copy it once and store it as <code>VEYDRIA_API_KEY</code> in your
           environment. You can revoke a key at any time without affecting the others.
         </p>
       </section>
@@ -88,8 +88,8 @@ export default function DocsPage() {
       <section className='mt-10'>
         <h2 className='text-xl font-semibold'>4. Connect over MCP</h2>
         <p className='text-muted-foreground mt-2'>
-          If your agent speaks the Model Context Protocol, add the AgentProof MCP server to your
-          client config. It reports actions in for you, so there is no custom code to maintain.
+          If your agent speaks the Model Context Protocol, add the Veydria MCP server to your client
+          config. It reports actions in for you, so there is no custom code to maintain.
         </p>
         <pre className='mt-4 overflow-x-auto rounded-lg bg-muted p-4 text-sm'>
           <code>{mcpExample}</code>

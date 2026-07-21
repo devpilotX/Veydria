@@ -1,10 +1,10 @@
 # Clerk Setup Guide
 
-This guide covers the setup and configuration of Clerk features used in AgentProof.
+This guide covers the setup and configuration of Clerk features used in Veydria.
 
 ## API keys and keyless mode
 
-AgentProof reads two Clerk keys from the environment:
+Veydria reads two Clerk keys from the environment:
 
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (prefixed `pk_test_` in development, `pk_live_` in production)
 - `CLERK_SECRET_KEY` (prefixed `sk_test_` in development, `sk_live_` in production)

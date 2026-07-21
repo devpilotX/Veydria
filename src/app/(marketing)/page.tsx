@@ -16,7 +16,7 @@ const featureIcons = ['search', 'scale', 'gauge', 'activity', 'shield'] as const
 
 const faqs = [
   {
-    q: 'Which regulations does AgentProof cover?',
+    q: 'Which regulations does Veydria cover?',
     a: 'The EU AI Act, the NIST AI Risk Management Framework, and ISO 42001. The knowledge base maps each one to concrete obligations.'
   },
   {
@@ -67,7 +67,7 @@ export default function HomePage() {
             Prove your AI agents are compliant
           </h1>
           <p className='text-muted-foreground mx-auto mt-6 max-w-2xl text-lg text-pretty'>
-            AgentProof helps your team govern, test, and document AI agents against the rules that
+            Veydria helps your team govern, test, and document AI agents against the rules that
             matter. Connect your systems, get the exact obligations, catch problems in production,
             and hand auditors evidence they can trust.
           </p>
@@ -117,7 +117,7 @@ export default function HomePage() {
           <div className='mx-auto max-w-2xl text-center'>
             <h2 className='text-2xl font-semibold sm:text-3xl'>Built for the way you ship AI</h2>
             <p className='text-muted-foreground mt-3'>
-              Point your agents at AgentProof and the paperwork keeps itself up to date.
+              Point your agents at Veydria and the paperwork keeps itself up to date.
             </p>
           </div>
           <div className='mt-10 grid gap-8 sm:grid-cols-3'>

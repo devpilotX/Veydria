@@ -1,9 +1,9 @@
 {
-  "name": "@agentproof/mcp",
+  "name": "@veydria/mcp",
   "version": "0.1.0",
-  "description": "MCP server that exposes AgentProof tools to AI agents.",
+  "description": "MCP server that exposes Veydria tools to AI agents.",
   "type": "module",
-  "bin": { "agentproof-mcp": "dist/index.js" },
+  "bin": { "veydria-mcp": "dist/index.js" },
   "files": ["dist", "README.md"],
   "scripts": {
     "start": "tsx src/index.ts",

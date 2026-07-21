@@ -1,4 +1,4 @@
-# Runs the full AgentProof stack locally: Postgres, the web app, and the evals
+# Runs the full Veydria stack locally: Postgres, the web app, and the evals
 # service. Copy .env to fill in real keys. Run migrations once the database is
 # up: pnpm db:migrate && pnpm db:seed (from the host, pointed at localhost:5432).
 

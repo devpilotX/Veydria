@@ -1,24 +1,24 @@
 /**
- * AgentProof MCP server.
+ * Veydria MCP server.
  *
- * Exposes AgentProof as tools an AI agent can call: report activity, look up
+ * Exposes Veydria as tools an AI agent can call: report activity, look up
  * the systems and obligations it belongs to, and verify the audit trail. It
- * authenticates with an organization API key and talks to the AgentProof HTTP
+ * authenticates with an organization API key and talks to the Veydria HTTP
  * API, so it runs anywhere the API is reachable.
  *
  * Run it from the repo root so it can resolve dependencies:
- *   AGENTPROOF_API_KEY=ap_live_... AGENTPROOF_BASE_URL=http://localhost:3000 \
+ *   VEYDRIA_API_KEY=ap_live_... VEYDRIA_BASE_URL=http://localhost:3000 \
  *     pnpm exec tsx mcp/src/index.ts
  */
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
-const apiKey = process.env.AGENTPROOF_API_KEY;
-const baseUrl = (process.env.AGENTPROOF_BASE_URL ?? 'https://app.agentproof.io').replace(/\/$/, '');
+const apiKey = process.env.VEYDRIA_API_KEY;
+const baseUrl = (process.env.VEYDRIA_BASE_URL ?? 'https://app.veydria.com').replace(/\/$/, '');
 
 if (!apiKey) {
-  console.error('Set AGENTPROOF_API_KEY before starting the MCP server.');
+  console.error('Set VEYDRIA_API_KEY before starting the MCP server.');
   process.exit(1);
 }
 
@@ -33,7 +33,7 @@ async function apiFetch(path: string, init?: RequestInit): Promise<unknown> {
   });
   const text = await response.text();
   if (!response.ok) {
-    throw new Error(`AgentProof API ${response.status}: ${text}`);
+    throw new Error(`Veydria API ${response.status}: ${text}`);
   }
   return text ? JSON.parse(text) : {};
 }
@@ -42,11 +42,11 @@ function textResult(data: unknown) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] };
 }
 
-const server = new McpServer({ name: 'agentproof', version: '0.1.0' });
+const server = new McpServer({ name: 'veydria', version: '0.1.0' });
 
 server.tool(
   'track_agent_event',
-  'Record one action or output from an AI agent in the AgentProof audit trail.',
+  'Record one action or output from an AI agent in the Veydria audit trail.',
   {
     agentExternalId: z.string().optional(),
     agentId: z.string().optional(),
@@ -65,7 +65,7 @@ server.tool(
   }
 );
 
-server.tool('list_ai_systems', 'List the AI systems in the AgentProof workspace.', {}, async () => {
+server.tool('list_ai_systems', 'List the AI systems in the Veydria workspace.', {}, async () => {
   return textResult(await apiFetch('/api/v1/systems'));
 });
 
@@ -81,7 +81,7 @@ server.tool(
 
 server.tool(
   'verify_audit_trail',
-  'Check that the AgentProof audit log hash chain is intact.',
+  'Check that the Veydria audit log hash chain is intact.',
   {},
   async () => {
     return textResult(await apiFetch('/api/v1/audit/verify'));
@@ -91,7 +91,7 @@ server.tool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('AgentProof MCP server is running on stdio.');
+  console.error('Veydria MCP server is running on stdio.');
 }
 
 main().catch((error) => {

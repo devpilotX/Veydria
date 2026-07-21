@@ -15,7 +15,7 @@ export const FEATURES: Feature[] = [
     name: 'Discover',
     tagline: 'See every AI system and agent in one inventory',
     description:
-      'Connect your agents through an API key, the TypeScript SDK, or the MCP server. AgentProof builds a live inventory of every model, agent, prompt, and data flow so nothing ships in the dark.',
+      'Connect your agents through an API key, the TypeScript SDK, or the MCP server. Veydria builds a live inventory of every model, agent, prompt, and data flow so nothing ships in the dark.',
     points: [
       {
         title: 'Three ways to connect',
@@ -99,7 +99,7 @@ export const FEATURES: Feature[] = [
     name: 'Prove',
     tagline: 'Generate the documents auditors ask for',
     description:
-      'AgentProof turns your live data into risk assessments, Annex IV technical files, model cards, and audit reports, and keeps them ready for auditors and customers.',
+      'Veydria turns your live data into risk assessments, Annex IV technical files, model cards, and audit reports, and keeps them ready for auditors and customers.',
     points: [
       {
         title: 'Documents from data',

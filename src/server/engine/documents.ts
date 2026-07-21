@@ -126,7 +126,7 @@ export function generateModelCard(system: SystemForDoc, agents: AgentForDoc[]): 
     '- The system should not be used outside the intended use above.',
     '',
     '## Governance',
-    `Risk tier ${tierLabel[system.riskTier] ?? system.riskTier}. Evaluated and monitored in AgentProof.`
+    `Risk tier ${tierLabel[system.riskTier] ?? system.riskTier}. Evaluated and monitored in Veydria.`
   ].join('\n');
 }
 
@@ -190,6 +190,6 @@ export function generateAuditReport(params: {
       : `The audit log hash chain failed verification. Investigate before relying on the trail.`,
     '',
     '## Statement',
-    'This report is generated from live data in AgentProof. Every entry links back to a record with a timestamp and an actor.'
+    'This report is generated from live data in Veydria. Every entry links back to a record with a timestamp and an actor.'
   ].join('\n');
 }

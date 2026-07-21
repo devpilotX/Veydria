@@ -1,6 +1,6 @@
 # Theming
 
-AgentProof ships one brand theme with a light and a dark variant. There is no theme picker. People switch between light and dark with the toggle in the dashboard header, or through the command palette (press the shortcut, then choose a mode). The choice is remembered by next-themes.
+Veydria ships one brand theme with a light and a dark variant. There is no theme picker. People switch between light and dark with the toggle in the dashboard header, or through the command palette (press the shortcut, then choose a mode). The choice is remembered by next-themes.
 
 ## Where the colors live
 

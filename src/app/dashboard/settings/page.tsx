@@ -24,7 +24,7 @@ export default async function SettingsPage() {
   return (
     <PageContainer
       pageTitle='Settings'
-      pageDescription='Manage how your workspace connects to AgentProof.'
+      pageDescription='Manage how your workspace connects to Veydria.'
     >
       <div className='space-y-6'>
         <Card>

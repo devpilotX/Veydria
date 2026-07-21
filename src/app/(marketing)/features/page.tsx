@@ -7,7 +7,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Features',
   description:
-    'Discover, classify, evaluate, monitor, and prove. The five jobs AgentProof does to keep your AI agents compliant with the EU AI Act, NIST AI RMF, and ISO 42001.',
+    'Discover, classify, evaluate, monitor, and prove. The five jobs Veydria does to keep your AI agents compliant with the EU AI Act, NIST AI RMF, and ISO 42001.',
   path: '/features'
 });
 
@@ -22,7 +22,7 @@ export default function FeaturesPage() {
         </h1>
         <p className='text-muted-foreground mt-4 text-lg text-pretty'>
           Compliance for AI is not one task, it is five. Each one only pays off when it feeds the
-          next. AgentProof runs the whole loop in one place, so the evidence you hand an auditor is
+          next. Veydria runs the whole loop in one place, so the evidence you hand an auditor is
           built from what your agents actually did.
         </p>
       </div>

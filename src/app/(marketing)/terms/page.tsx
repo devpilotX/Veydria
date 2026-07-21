@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Terms of Service',
   description:
-    'The terms that govern your use of AgentProof, including billing, data ownership, and liability.',
+    'The terms that govern your use of Veydria, including billing, data ownership, and liability.',
   path: '/terms'
 });
 

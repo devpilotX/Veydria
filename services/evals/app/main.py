@@ -1,4 +1,4 @@
-"""AgentProof evaluation service.
+"""Veydria evaluation service.
 
 A small FastAPI service that scores an agent for bias, hallucination, prompt
 injection, safety, and policy violations. The web app calls POST /evaluate over
@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 from .scoring import score_evaluation
 
-app = FastAPI(title="AgentProof Evals", version="0.1.0")
+app = FastAPI(title="Veydria Evals", version="0.1.0")
 
 EVAL_TYPES = {"bias", "hallucination", "prompt_injection", "safety", "policy"}
 

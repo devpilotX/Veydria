@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 
 export const metadata = buildMetadata({
   title: 'Sub processors',
-  description: 'The vendors AgentProof uses to run the service and the purpose each one serves.',
+  description: 'The vendors Veydria uses to run the service and the purpose each one serves.',
   path: '/subprocessors'
 });
 

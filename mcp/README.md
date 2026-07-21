@@ -1,6 +1,6 @@
-# @agentproof/mcp
+# @veydria/mcp
 
-An MCP server that lets an AI agent talk to AgentProof. The agent can report what it does, look up the systems and obligations it belongs to, and verify the audit trail.
+An MCP server that lets an AI agent talk to Veydria. The agent can report what it does, look up the systems and obligations it belongs to, and verify the audit trail.
 
 ## Tools
 
@@ -14,7 +14,7 @@ An MCP server that lets an AI agent talk to AgentProof. The agent can report wha
 From the repository root, so dependencies resolve:
 
 ```bash
-AGENTPROOF_API_KEY=ap_live_... AGENTPROOF_BASE_URL=http://localhost:3000 \
+VEYDRIA_API_KEY=ap_live_... VEYDRIA_BASE_URL=http://localhost:3000 \
   pnpm exec tsx mcp/src/index.ts
 ```
 
@@ -25,12 +25,12 @@ Point your client at the command above. For example, in a client that reads a JS
 ```json
 {
   "mcpServers": {
-    "agentproof": {
+    "veydria": {
       "command": "pnpm",
       "args": ["exec", "tsx", "mcp/src/index.ts"],
       "env": {
-        "AGENTPROOF_API_KEY": "ap_live_...",
-        "AGENTPROOF_BASE_URL": "http://localhost:3000"
+        "VEYDRIA_API_KEY": "ap_live_...",
+        "VEYDRIA_BASE_URL": "http://localhost:3000"
       }
     }
   }

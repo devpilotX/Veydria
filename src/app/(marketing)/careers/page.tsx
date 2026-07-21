@@ -4,7 +4,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Careers',
   description:
-    'Join AgentProof. We are a small team building one honest workflow for AI compliance. See our open roles.',
+    'Join Veydria. We are a small team building one honest workflow for AI compliance. See our open roles.',
   path: '/careers'
 });
 

@@ -5,7 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Responsible AI',
   description:
-    'The principles that guide how AgentProof builds its product and how we suggest you use it.',
+    'The principles that guide how Veydria builds its product and how we suggest you use it.',
   path: '/responsible-ai'
 });
 

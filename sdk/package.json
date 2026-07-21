@@ -1,7 +1,7 @@
 {
-  "name": "@agentproof/sdk",
+  "name": "@veydria/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for streaming AI agent activity into AgentProof.",
+  "description": "TypeScript SDK for streaming AI agent activity into Veydria.",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",

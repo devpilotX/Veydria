@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Changelog',
   description:
-    'What is new in AgentProof: audit log verification, the MCP server, evaluation suites, risk classification, and the document generator.',
+    'What is new in Veydria: audit log verification, the MCP server, evaluation suites, risk classification, and the document generator.',
   path: '/changelog'
 });
 

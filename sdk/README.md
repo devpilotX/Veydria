@@ -1,23 +1,23 @@
-# @agentproof/sdk
+# @veydria/sdk
 
-The TypeScript SDK for AgentProof. Stream what your AI agents do in production into an append only, hash chained audit log, and let AgentProof watch for policy breaches.
+The TypeScript SDK for Veydria. Stream what your AI agents do in production into an append only, hash chained audit log, and let Veydria watch for policy breaches.
 
 ## Install
 
 ```bash
-pnpm add @agentproof/sdk
+pnpm add @veydria/sdk
 ```
 
 ## Use
 
-Create an API key in AgentProof under Settings, then:
+Create an API key in Veydria under Settings, then:
 
 ```ts
-import { AgentProof } from '@agentproof/sdk';
+import { Veydria } from '@veydria/sdk';
 
-const ap = new AgentProof({
-  apiKey: process.env.AGENTPROOF_API_KEY!,
-  baseUrl: 'https://app.agentproof.io'
+const ap = new Veydria({
+  apiKey: process.env.VEYDRIA_API_KEY!,
+  baseUrl: 'https://app.veydria.com'
 });
 
 await ap.track({
@@ -39,7 +39,7 @@ await ap.trackBatch([
 ]);
 ```
 
-`agentExternalId` matches the external id you set on the agent in AgentProof. You can also pass `agentId` if you have the AgentProof id.
+`agentExternalId` matches the external id you set on the agent in Veydria. You can also pass `agentId` if you have the Veydria id.
 
 ## Build
 

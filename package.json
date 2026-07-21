@@ -1,10 +1,10 @@
 {
-  "name": "agentproof",
+  "name": "veydria",
   "version": "1.0.0",
   "private": true,
   "author": {
-    "name": "AgentProof",
-    "url": "https://agentproof.io"
+    "name": "Veydria",
+    "url": "https://veydria.com"
   },
   "scripts": {
     "dev": "next dev",

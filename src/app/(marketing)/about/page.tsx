@@ -6,7 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'About',
   description:
-    'Why we built AgentProof: teams ship AI faster than they can document it. We keep compliance work next to the systems it describes.',
+    'Why we built Veydria: teams ship AI faster than they can document it. We keep compliance work next to the systems it describes.',
   path: '/about'
 });
 
