@@ -6,7 +6,8 @@ Hard rules that always apply: never use the em dash character anywhere (code, co
 
 ## Current state at a glance
 
-- Branch main, clean working tree. HEAD is 7dd2521 "Wait for the evaluation request before asserting the detail page".
+- Branch main. The repository is published to the private GitHub remote (origin https://github.com/devpilotX/Veydria.git, default branch main) with full history and all tags.
+- Professionalized for publishing: a full README.md, a proprietary LICENSE (with the MIT starter notice retained), CONTRIBUTING.md, CODE_OF_CONDUCT.md, a GitHub Actions CI workflow (tsc, lint, unit tests, production build), pull request and issue templates, and DEPLOYMENT.md renamed to DEPLOY.md. Removed the starter FUNDING.yml and the unused skills-lock.json.
 - The product is feature complete for the MVP loop and is tested end to end. The next phase is deployment (see NEXT PHASE below).
 - All green: tsc clean, oxlint 0 errors, unit tests 19 of 19, Playwright e2e 5 of 5, production build compiles, pnpm db:verify passes and now chain checks the audit log. Lighthouse homepage accessibility 100 and SEO 100. axe reports zero serious or critical violations on the homepage, sign in, and the signed in dashboard.
 
@@ -22,8 +23,8 @@ Hard rules that always apply: never use the em dash character anywhere (code, co
 
 ## Database
 
-- PostgreSQL 18.4 at localhost:5432, user postgres, password REDACTED. Database name is `agentproof` (kept as an internal name, not user facing, not renamed to veydria to avoid recreating the DB).
-- .env DATABASE_URL = postgresql://postgres:REDACTED@localhost:5432/agentproof. The password lives only in .env, which is gitignored and never committed.
+- PostgreSQL 18.4 at localhost:5432, user postgres. The local password is stored only in .env (gitignored) and is deliberately not written in this file. Database name is `agentproof` (kept as an internal name, not user facing, not renamed to veydria to avoid recreating the DB).
+- .env DATABASE_URL has the shape postgresql://postgres:YOUR_LOCAL_PASSWORD@localhost:5432/agentproof. The password lives only in .env, which is gitignored and never committed.
 - pgvector is NOT installed locally (Windows admin UAC was declined). Vectors are stored as real[] columns and similarity uses a SQL function `agentproof_cosine_similarity`. The vector helper is isolated in src/db/vector.ts, so switching to native pgvector later is a small change. The deployment phase uses a pgvector enabled Postgres image, but the app still uses the real[] fallback until the embedding columns are migrated to the vector type.
 - SQL helper names stay as `agentproof_cosine_similarity` and `agentproof_block_audit_mutation` (internal, not user facing). audit_log has an append only trigger that blocks UPDATE and DELETE per row; TRUNCATE is allowed so the seed can reset.
 - Commands: `pnpm db:migrate` (apply migrations, install cosine fn + audit trigger, idempotently seed the regulations KB), `pnpm db:seed` (full reset + demo tenant data), `pnpm db:seed:regulations` (KB only, idempotent), `pnpm db:verify` (fresh org core loop check, now also raises an alert and chain checks the audit log, fails if the chain is broken), `pnpm db:resign` (one time maintenance: re-signs each org's audit chain in place with the current hash formula and removes leftover org_e2e_ test orgs), `pnpm db:generate`, `pnpm db:studio`, `pnpm db:push`.
@@ -90,7 +91,7 @@ tsc --noEmit clean. oxlint 0 errors (about 30 warnings, all no-console in CLI sc
 
 ## NEXT PHASE: deployment
 
-Goal: ship Veydria to a single AWS EC2 host with automatic HTTPS. Do not touch product code beyond what deployment needs. There is initial deploy scaffolding from phase 8 (Dockerfile, docker-compose.yml, DEPLOYMENT.md at the repo root); the production phase replaces or extends it with the following.
+Goal: ship Veydria to a single AWS EC2 host with automatic HTTPS. Do not touch product code beyond what deployment needs. There is initial deploy scaffolding from phase 8 (Dockerfile, docker-compose.yml, DEPLOY.md at the repo root); the production phase replaces or extends it with the following.
 
 - Containers and compose (production docker-compose):
   - web: the Next.js app. Build with BUILD_STANDALONE=true for the standalone output, run as a non root user, expose 3000 internally only.
@@ -107,7 +108,7 @@ Goal: ship Veydria to a single AWS EC2 host with automatic HTTPS. Do not touch p
 ## Git and backup
 
 - Clean history on branch main. Local commit identity is Veydria <dev@veydria.com> (repo scoped, global config untouched).
-- gh CLI is NOT installed, so pushing to a private GitHub remote needs the user's credentials. Meanwhile the backup is a bundle: `git bundle create veydria-backup.bundle --all` (the bundle is gitignored). Restore with `git clone veydria-backup.bundle restored-veydria`.
+- The repository is published to the private GitHub remote origin at https://github.com/devpilotX/Veydria.git (default branch main), pushed with full history and all tags. Keep a local snapshot with `git bundle create veydria-backup.bundle --all` (the bundle is gitignored). Restore with `git clone veydria-backup.bundle restored-veydria`.
 - Commit conventions: no em dashes, human messages, commit after each meaningful unit. Pre-commit hook runs `pnpm exec lint-staged` (oxfmt). Pre-push runs `pnpm run lint`.
 
 ## Recent commit trail (newest first)
@@ -136,7 +137,7 @@ d58e240 Show the classification result after creating a system
 
 ## How to resume quickly
 
-1. Read this file (HANDOFF.md). README.md and DEPLOYMENT.md have more background.
+1. Read this file (HANDOFF.md). README.md and DEPLOY.md have more background.
 2. Run `pnpm db:verify` to confirm the core loop and the audit chain are intact.
 3. Run `pnpm dev` and sign in through Clerk (dev keys are in .env). The demo org has data.
 4. Continue with the deployment phase above. Follow the commit and no em dash conventions.
