@@ -1,17 +1,29 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Icons } from '@/components/icons';
+import { RiskBadge } from '@/components/dashboard/badges';
 
 const inputClass =
   'border-input bg-background h-9 w-full rounded-md border px-3 text-sm focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none';
 
+type CreateResult = {
+  id: string;
+  name: string;
+  riskTier: string;
+  obligationsCreated: number;
+};
+
 export function NewSystemForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [result, setResult] = useState<CreateResult | null>(null);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,14 +51,94 @@ export function NewSystemForm() {
         const data = (await response.json().catch(() => ({}))) as { error?: string };
         throw new Error(data.error ?? 'Could not create the system.');
       }
-      const result = (await response.json()) as { id: string };
+      const data = (await response.json()) as CreateResult;
+      setResult(data);
       toast.success('System created and classified.');
-      router.push(`/dashboard/systems/${result.id}`);
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong.');
+    } finally {
       setPending(false);
     }
+  }
+
+  async function retryClassify() {
+    if (!result) return;
+    setRetrying(true);
+    try {
+      const response = await fetch(`/api/ai-systems/${result.id}/classify`, { method: 'POST' });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error ?? 'Classification failed.');
+      }
+      const data = (await response.json()) as { riskTier: string; obligationsCreated: number };
+      setResult((prev) =>
+        prev
+          ? { ...prev, riskTier: data.riskTier, obligationsCreated: data.obligationsCreated }
+          : prev
+      );
+      toast.success('Classification updated.');
+      router.refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Something went wrong.');
+    } finally {
+      setRetrying(false);
+    }
+  }
+
+  if (result) {
+    return (
+      <Card>
+        <CardContent className='space-y-5 pt-6'>
+          <div className='flex items-center gap-2'>
+            <Icons.circleCheck className='size-5 text-emerald-600 dark:text-emerald-400' />
+            <h2 className='text-lg font-medium'>{result.name} is set up</h2>
+          </div>
+
+          <div className='flex items-center gap-3 text-sm'>
+            <span className='text-muted-foreground'>Risk tier</span>
+            <RiskBadge tier={result.riskTier} />
+          </div>
+
+          {result.obligationsCreated > 0 ? (
+            <p className='text-muted-foreground text-sm'>
+              Generated {result.obligationsCreated} obligation
+              {result.obligationsCreated === 1 ? '' : 's'} from the knowledge base, ready to work.
+            </p>
+          ) : (
+            <div className='rounded-md border border-amber-500/30 bg-amber-500/10 p-4 text-sm'>
+              <p className='font-medium text-amber-700 dark:text-amber-400'>
+                No obligations were generated
+              </p>
+              <p className='text-muted-foreground mt-1'>
+                That is unusual. It can happen if the regulations knowledge base is incomplete.
+                Classify again to try once more.
+              </p>
+              <div className='mt-3'>
+                <Button variant='outline' size='sm' onClick={retryClassify} isLoading={retrying}>
+                  Retry classification
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className='flex flex-wrap gap-2 pt-1'>
+            <Button render={<Link href={`/dashboard/systems/${result.id}`} />}>View system</Button>
+            {result.obligationsCreated > 0 && (
+              <Button
+                variant='outline'
+                render={<Link href={`/dashboard/obligations?aiSystemId=${result.id}`} />}
+              >
+                View obligations
+              </Button>
+            )}
+            <Button variant='ghost' onClick={() => setResult(null)}>
+              Add another
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
