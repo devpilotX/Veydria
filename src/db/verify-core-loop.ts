@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import { and, eq } from 'drizzle-orm';
 import { client, db } from '@/db';
-import { aiSystems, auditLog, obligations } from '@/db/schema';
+import { aiSystems, alerts, auditLog, obligations } from '@/db/schema';
 import { getOrCreateOrganization } from '@/lib/auth/tenant';
 import { createAndClassifyAiSystem } from '@/server/services/classification';
+import { raiseAlert } from '@/server/services/alerts';
+import { verifyAuditChain } from '@/server/services/audit';
 import type { TenantContext } from '@/lib/auth/tenant';
 
 /**
@@ -28,7 +30,9 @@ async function main() {
   assert(Boolean(org.id), 'a database org row exists for the fresh Clerk org id');
   assert(org.clerkOrgId === VERIFY_CLERK_ORG_ID, 'the org row is linked to the fresh Clerk org id');
 
-  // Start clean: remove any system left by a previous run (cascades obligations).
+  // Start clean: remove domain rows left by a previous run (cascades
+  // obligations). The audit chain is append only and stays, growing each run.
+  await db.delete(alerts).where(eq(alerts.organizationId, org.id));
   await db.delete(aiSystems).where(eq(aiSystems.organizationId, org.id));
 
   // 2. Create and classify a system in that fresh org, with no demo data present.
@@ -79,12 +83,44 @@ async function main() {
   assert(actions.includes('ai_system.classified'), 'audit trail has ai_system.classified');
   assert(actions.includes('obligations.generated'), 'audit trail has obligations.generated');
 
-  // Clean up the test system (cascades its obligations). The org and its audit
-  // trail stay, since the audit log is append only.
+  // Raise an alert so the chain also contains an alert.raised row, the other
+  // entry whose JSONB data reordered and used to break verification.
+  await raiseAlert({
+    organizationId: org.id,
+    aiSystemId: result.id,
+    type: 'integrity',
+    severity: 'low',
+    source: 'system',
+    title: 'Core loop verification check',
+    description: 'Synthetic alert raised by the verifier to exercise the audit chain.',
+    actorLabel: 'Verifier'
+  });
+
+  const withAlert = await db
+    .select({ action: auditLog.action })
+    .from(auditLog)
+    .where(eq(auditLog.organizationId, org.id));
+  assert(
+    withAlert.some((row) => row.action === 'alert.raised'),
+    'audit trail has alert.raised'
+  );
+
+  // The real guard: recompute the whole chain and fail if it does not verify.
+  const chain = await verifyAuditChain(org.id);
+  assert(
+    chain.valid,
+    chain.valid
+      ? `the audit chain verifies across ${chain.checked} entries`
+      : `the audit chain broke at seq ${chain.brokenAtSeq}: ${chain.reason}`
+  );
+
+  // Clean up the test system and alert (cascades obligations). The org and its
+  // audit trail stay, since the audit log is append only.
+  await db.delete(alerts).where(eq(alerts.organizationId, org.id));
   await db.delete(aiSystems).where(eq(aiSystems.id, result.id));
 
   console.log(
-    `\nPASS: fresh org ${org.id.slice(0, 8)} classified a system to ${result.riskTier} with ${result.obligationsCreated} obligations, no demo seed needed.`
+    `\nPASS: fresh org ${org.id.slice(0, 8)} classified to ${result.riskTier} with ${result.obligationsCreated} obligations, raised an alert, and the audit chain verifies across ${chain.checked} entries.`
   );
   await client.end();
 }
