@@ -1,52 +1,42 @@
 import { useRegisterActions } from 'kbar';
 import { useTheme } from 'next-themes';
-import { useThemeConfig } from '@/components/themes/active-theme';
-import { THEMES } from '@/components/themes/theme.config';
 
 const useThemeSwitching = () => {
-  const { theme, setTheme } = useTheme();
-  const { activeTheme, setActiveTheme } = useThemeConfig();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const toggleDarkLight = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
-
-  const cycleTheme = () => {
-    const currentIndex = THEMES.findIndex((t) => t.value === activeTheme);
-    const nextIndex = (currentIndex + 1) % THEMES.length;
-    setActiveTheme(THEMES[nextIndex].value);
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
   const themeActions = [
     {
-      id: 'cycleTheme',
-      name: 'Switch Theme',
-      shortcut: ['t', 't'],
-      section: 'Theme',
-      perform: cycleTheme
-    },
-    {
       id: 'toggleDarkLight',
-      name: 'Toggle Dark/Light Mode',
+      name: 'Toggle dark and light mode',
       shortcut: ['d', 'd'],
       section: 'Theme',
       perform: toggleDarkLight
     },
     {
       id: 'setLightTheme',
-      name: 'Set Light Theme',
+      name: 'Use light mode',
       section: 'Theme',
       perform: () => setTheme('light')
     },
     {
       id: 'setDarkTheme',
-      name: 'Set Dark Theme',
+      name: 'Use dark mode',
       section: 'Theme',
       perform: () => setTheme('dark')
+    },
+    {
+      id: 'setSystemTheme',
+      name: 'Match system',
+      section: 'Theme',
+      perform: () => setTheme('system')
     }
   ];
 
-  useRegisterActions(themeActions, [theme, activeTheme]);
+  useRegisterActions(themeActions, [resolvedTheme]);
 };
 
 export default useThemeSwitching;
