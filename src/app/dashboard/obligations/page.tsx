@@ -28,7 +28,8 @@ export default async function ObligationsPage({
   const input = listObligationsSchema.parse({
     page: params.page,
     status: params.status || undefined,
-    regulationCode: params.regulationCode || undefined
+    regulationCode: params.regulationCode || undefined,
+    aiSystemId: params.aiSystemId || undefined
   });
   const { items, page, pageCount } = await listObligations(ctx, input);
 
