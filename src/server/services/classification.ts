@@ -2,7 +2,7 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { db } from '@/db';
 import { aiSystems, obligations, regulationClauses } from '@/db/schema';
 import type { TenantContext } from '@/lib/auth/tenant';
-import { notFound } from '@/lib/api/errors';
+import { ApiError, notFound } from '@/lib/api/errors';
 import { classifyAiSystem, planObligations, type RiskTier } from '@/server/engine/rules';
 import type { CreateAiSystemInput } from './ai-systems';
 import { appendAuditLogTx } from './audit';
@@ -28,6 +28,13 @@ async function buildObligationRows(
   const clauses = refs.length
     ? await tx.select().from(regulationClauses).where(inArray(regulationClauses.ref, refs))
     : [];
+  if (refs.length > 0 && clauses.length === 0) {
+    throw new ApiError(
+      503,
+      'The regulations knowledge base is empty, so obligations cannot be generated. Run pnpm db:seed:regulations or pnpm db:migrate first.',
+      'regulations_not_seeded'
+    );
+  }
   const clauseByKey = new Map(clauses.map((clause) => [`${clause.code}:${clause.ref}`, clause]));
 
   const rows: ObligationRow[] = [];
