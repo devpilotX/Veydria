@@ -4,6 +4,7 @@ import { db } from '@/db';
 import { agents, monitoringEvents } from '@/db/schema';
 import type { TenantContext } from '@/lib/auth/tenant';
 import { badRequest } from '@/lib/api/errors';
+import { raiseAlert } from './alerts';
 import { paginated, paginationSchema, pageOffset } from './shared';
 
 const eventTypeEnum = z.enum([
@@ -56,7 +57,7 @@ export async function ingestEvents(
   input: z.infer<typeof ingestBatchSchema>
 ) {
   const orgAgents = await db
-    .select({ id: agents.id, externalId: agents.externalId })
+    .select({ id: agents.id, externalId: agents.externalId, aiSystemId: agents.aiSystemId })
     .from(agents)
     .where(eq(agents.organizationId, organizationId));
 
@@ -104,7 +105,47 @@ export async function ingestEvents(
     )
   );
 
-  return { accepted: inserted.length, flagged: rows.filter((r) => r.flagged).length };
+  // Turn flagged outputs into alerts a person can act on. Group by agent so a
+  // noisy batch raises one alert per agent instead of flooding the screen.
+  const flaggedByAgent = new Map<
+    string,
+    { count: number; reason: string | null; eventId: string }
+  >();
+  rows.forEach((row, index) => {
+    if (!row.flagged) return;
+    const eventId = inserted[index].id;
+    const existing = flaggedByAgent.get(row.agentId);
+    if (existing) {
+      existing.count += 1;
+    } else {
+      flaggedByAgent.set(row.agentId, { count: 1, reason: row.flagReason, eventId });
+    }
+  });
+
+  const systemByAgent = new Map(orgAgents.map((a) => [a.id, a.aiSystemId]));
+  for (const [agentId, info] of flaggedByAgent) {
+    await raiseAlert({
+      organizationId,
+      agentId,
+      aiSystemId: systemByAgent.get(agentId) ?? null,
+      type: 'policy_breach',
+      severity: 'high',
+      source: 'monitoring',
+      title: 'Possible personal data in agent output',
+      description:
+        info.count > 1
+          ? `${info.count} responses from this agent were flagged. ${info.reason ?? ''}`.trim()
+          : (info.reason ?? 'A response was flagged by a policy check.'),
+      metadata: { rule: 'pii_email', flaggedCount: info.count, sampleEventId: info.eventId },
+      actorLabel: 'Monitoring'
+    });
+  }
+
+  return {
+    accepted: inserted.length,
+    flagged: rows.filter((r) => r.flagged).length,
+    alertsRaised: flaggedByAgent.size
+  };
 }
 
 export async function listEvents(ctx: TenantContext, input: ListEventsInput) {

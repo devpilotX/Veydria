@@ -4,7 +4,7 @@ import { db } from '@/db';
 import { alerts } from '@/db/schema';
 import type { TenantContext } from '@/lib/auth/tenant';
 import { notFound } from '@/lib/api/errors';
-import { appendAuditLog } from './audit';
+import { appendAuditLog, appendAuditLogTx } from './audit';
 import { paginated, paginationSchema, pageOffset } from './shared';
 
 export const listAlertsSchema = paginationSchema.extend({
@@ -19,6 +19,59 @@ export const updateAlertSchema = z.object({
 
 export type ListAlertsInput = z.infer<typeof listAlertsSchema>;
 export type UpdateAlertInput = z.infer<typeof updateAlertSchema>;
+
+export type RaiseAlertInput = {
+  organizationId: string;
+  agentId?: string | null;
+  aiSystemId?: string | null;
+  type: 'anomaly' | 'policy_breach' | 'evaluation_failure' | 'drift' | 'integrity';
+  severity?: 'info' | 'low' | 'medium' | 'high' | 'critical';
+  source?: 'monitoring' | 'evaluation' | 'system' | 'integrity';
+  title: string;
+  description?: string | null;
+  metadata?: Record<string, unknown> | null;
+  // Label shown in the audit trail for the automated actor that raised it.
+  actorLabel?: string;
+};
+
+/**
+ * Raises an alert and records it in the audit trail in one transaction, so the
+ * alert row and its alert.raised entry commit together or not at all. This is
+ * how monitoring and evaluations turn a flagged event or a failed run into
+ * something a person can act on from the Alerts screen. The actor is the system
+ * rather than a user, since nobody clicked to create it.
+ */
+export async function raiseAlert(input: RaiseAlertInput) {
+  return db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(alerts)
+      .values({
+        organizationId: input.organizationId,
+        agentId: input.agentId ?? null,
+        aiSystemId: input.aiSystemId ?? null,
+        type: input.type,
+        severity: input.severity ?? 'medium',
+        source: input.source ?? 'system',
+        status: 'open',
+        title: input.title,
+        description: input.description ?? null,
+        metadata: input.metadata ?? null
+      })
+      .returning();
+
+    await appendAuditLogTx(tx, {
+      organizationId: input.organizationId,
+      actorType: 'system',
+      actorLabel: input.actorLabel ?? 'Monitoring',
+      action: 'alert.raised',
+      resourceType: 'alert',
+      resourceId: row.id,
+      data: { type: row.type, severity: row.severity, source: row.source }
+    });
+
+    return row;
+  });
+}
 
 export async function listAlerts(ctx: TenantContext, input: ListAlertsInput) {
   const where = and(
