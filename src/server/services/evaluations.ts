@@ -6,6 +6,7 @@ import type { TenantContext } from '@/lib/auth/tenant';
 import { badRequest, notFound } from '@/lib/api/errors';
 import { pseudoEmbedding } from '@/lib/embedding-fallback';
 import { appendAuditLog } from './audit';
+import { raiseAlert } from './alerts';
 import {
   type EvalServiceResult,
   isEvalsServiceConfigured,
@@ -216,6 +217,30 @@ export async function runEvaluation(ctx: TenantContext, id: string) {
     resourceId: id,
     data: { type: evaluation.type, score: result.score, passed: result.passed }
   });
+
+  // A run that scored below its pass mark is a risk worth surfacing, so raise an
+  // alert that shows up on the Alerts screen with an alert.raised audit entry.
+  if (!result.passed) {
+    const label = evaluation.type.replace(/_/g, ' ');
+    const title = `${label.charAt(0).toUpperCase()}${label.slice(1)} evaluation fell below the pass mark`;
+    await raiseAlert({
+      organizationId: ctx.organizationId,
+      agentId: agent.id,
+      aiSystemId: agent.aiSystemId,
+      type: 'evaluation_failure',
+      severity: evaluation.threshold - result.score >= 15 ? 'high' : 'medium',
+      source: 'evaluation',
+      title,
+      description: `The ${label} run scored ${Math.round(result.score)}, under the pass mark of ${evaluation.threshold}.`,
+      metadata: {
+        evaluationId: id,
+        type: evaluation.type,
+        score: result.score,
+        threshold: evaluation.threshold
+      },
+      actorLabel: 'Evaluation'
+    });
+  }
 
   return updated;
 }
