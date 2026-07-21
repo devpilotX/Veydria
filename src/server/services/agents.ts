@@ -25,12 +25,11 @@ export const createAgentSchema = z.object({
   modelProvider: z.string().max(120).optional(),
   modelName: z.string().max(120).optional(),
   systemPrompt: z.string().max(8000).optional(),
-  externalId: z.string().max(200).optional()
+  externalId: z.string().max(200).optional(),
+  status: agentStatusEnum.default('active')
 });
 
-export const updateAgentSchema = createAgentSchema.partial().extend({
-  status: agentStatusEnum.optional()
-});
+export const updateAgentSchema = createAgentSchema.partial();
 
 export const listAgentsSchema = paginationSchema.extend({
   search: z.string().optional(),

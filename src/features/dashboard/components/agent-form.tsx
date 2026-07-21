@@ -55,9 +55,9 @@ export function AgentForm({
       modelName: String(form.get('modelName') ?? '').trim() || undefined,
       description: String(form.get('description') ?? '').trim() || undefined,
       systemPrompt: String(form.get('systemPrompt') ?? '').trim() || undefined,
-      externalId: String(form.get('externalId') ?? '').trim() || undefined
+      externalId: String(form.get('externalId') ?? '').trim() || undefined,
+      status: String(form.get('status') ?? 'active')
     };
-    if (isEdit) payload.status = String(form.get('status') ?? 'active');
 
     if (String(payload.name).length < 2) {
       toast.error('Give the agent a name.');
@@ -174,7 +174,7 @@ export function AgentForm({
             </div>
           </div>
 
-          {isEdit && (
+          {isEdit ? (
             <div className='space-y-1.5'>
               <label htmlFor='status' className='text-sm font-medium'>
                 Status
@@ -191,6 +191,27 @@ export function AgentForm({
                   </option>
                 ))}
               </select>
+            </div>
+          ) : (
+            <div className='space-y-1.5'>
+              <label htmlFor='status' className='text-sm font-medium'>
+                Status
+              </label>
+              <select
+                id='status'
+                name='status'
+                className={`${inputClass} capitalize`}
+                defaultValue='active'
+              >
+                {agentStatuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              <p className='text-muted-foreground text-xs'>
+                New agents are active by default. Set paused if it is not live yet.
+              </p>
             </div>
           )}
 
