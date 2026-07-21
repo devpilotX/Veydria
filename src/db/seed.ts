@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { computeAuditHash, getAuditSecret } from '@/lib/audit-hash';
+import { computeAuditHash, CURRENT_HASH_VERSION, getAuditSecret } from '@/lib/audit-hash';
 import { pseudoEmbedding } from '@/lib/embedding-fallback';
 import { seedRegulations as seedRegulationKnowledgeBase } from './seed-regulations';
 import * as schema from '@/db/schema';
@@ -663,6 +663,7 @@ async function main() {
       data: event.data,
       prevHash,
       hash,
+      hashVersion: CURRENT_HASH_VERSION,
       createdAt: event.createdAt
     });
     prevHash = hash;
