@@ -77,6 +77,7 @@ async function main() {
   const actions = auditRows.map((row) => row.action);
   assert(actions.includes('ai_system.created'), 'audit trail has ai_system.created');
   assert(actions.includes('ai_system.classified'), 'audit trail has ai_system.classified');
+  assert(actions.includes('obligations.generated'), 'audit trail has obligations.generated');
 
   // Clean up the test system (cascades its obligations). The org and its audit
   // trail stay, since the audit log is append only.

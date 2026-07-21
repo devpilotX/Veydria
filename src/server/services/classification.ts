@@ -61,6 +61,15 @@ function classificationRationale(rationale: string, reference: string | null): s
   return reference ? `${rationale} (${reference})` : rationale;
 }
 
+/** Counts generated obligations per framework, for the audit entry. */
+function frameworkBreakdown(rows: ObligationRow[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const row of rows) {
+    counts[row.regulationCode] = (counts[row.regulationCode] ?? 0) + 1;
+  }
+  return counts;
+}
+
 /**
  * Creates a system and classifies it in a single transaction. Either the
  * system exists with its tier, obligations, and audit trail, or nothing is
@@ -112,6 +121,18 @@ export async function createAndClassifyAiSystem(ctx: TenantContext, input: Creat
       resourceId: system.id,
       data: { riskTier: result.tier, obligations: rows.length }
     });
+
+    if (rows.length) {
+      await appendAuditLogTx(tx, {
+        organizationId: ctx.organizationId,
+        actorType: ctx.userId ? 'user' : 'system',
+        actorId: ctx.clerkUserId,
+        action: 'obligations.generated',
+        resourceType: 'ai_system',
+        resourceId: system.id,
+        data: { count: rows.length, byFramework: frameworkBreakdown(rows) }
+      });
+    }
 
     return {
       id: system.id,
@@ -167,6 +188,18 @@ export async function classifyAndSaveSystem(ctx: TenantContext, systemId: string
       resourceId: system.id,
       data: { riskTier: result.tier, obligations: rows.length }
     });
+
+    if (rows.length) {
+      await appendAuditLogTx(tx, {
+        organizationId: ctx.organizationId,
+        actorType: ctx.userId ? 'user' : 'system',
+        actorId: ctx.clerkUserId,
+        action: 'obligations.generated',
+        resourceType: 'ai_system',
+        resourceId: system.id,
+        data: { count: rows.length, byFramework: frameworkBreakdown(rows) }
+      });
+    }
 
     return rows.length;
   });
