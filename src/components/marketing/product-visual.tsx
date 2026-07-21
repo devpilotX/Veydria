@@ -37,7 +37,7 @@ const tone = {
   red: 'border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400',
   amber: 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400',
   green: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
-  blue: 'border-primary/30 bg-primary/10 text-primary',
+  blue: 'border-primary/30 bg-primary/10 text-primary dark:border-blue-400/40 dark:bg-blue-400/15 dark:text-blue-200',
   gray: 'border-border bg-muted text-muted-foreground'
 } as const;
 
