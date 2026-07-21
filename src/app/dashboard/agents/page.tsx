@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import PageContainer from '@/components/layout/page-container';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
@@ -9,6 +11,7 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { EmptyState, Pagination } from '@/components/dashboard/empty-state';
+import { Icons } from '@/components/icons';
 import { getDashboardContext } from '@/lib/auth/page';
 import { listAgents, listAgentsSchema } from '@/server/services/agents';
 
@@ -36,6 +39,12 @@ export default async function AgentsPage({
     <PageContainer
       pageTitle='Agents'
       pageDescription='Every agent connected through the SDK, the MCP server, or added by hand.'
+      pageHeaderAction={
+        <Button render={<Link href='/dashboard/agents/new' />}>
+          <Icons.add className='h-4 w-4' />
+          New agent
+        </Button>
+      }
     >
       <div className='space-y-4'>
         <form className='flex flex-wrap items-center gap-2'>
@@ -50,7 +59,7 @@ export default async function AgentsPage({
           <EmptyState
             icon='robot'
             title='No agents yet'
-            description='Connect an agent with the TypeScript SDK or the MCP server, or add one from a system page.'
+            description='Add your first agent with the New agent button, or connect one through the TypeScript SDK or the MCP server.'
           />
         ) : (
           <Card>
@@ -68,7 +77,14 @@ export default async function AgentsPage({
                 <TableBody>
                   {items.map((agent) => (
                     <TableRow key={agent.id}>
-                      <TableCell className='font-medium'>{agent.name}</TableCell>
+                      <TableCell className='font-medium'>
+                        <Link
+                          href={`/dashboard/agents/${agent.id}`}
+                          className='hover:text-primary font-medium'
+                        >
+                          {agent.name}
+                        </Link>
+                      </TableCell>
                       <TableCell className='capitalize'>{agent.type}</TableCell>
                       <TableCell>
                         {agent.modelProvider
