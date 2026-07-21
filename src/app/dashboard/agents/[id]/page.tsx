@@ -3,11 +3,23 @@ import { notFound } from 'next/navigation';
 import PageContainer from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import { EvaluationStatusBadge } from '@/components/dashboard/badges';
+import { EmptyState } from '@/components/dashboard/empty-state';
 import { Icons } from '@/components/icons';
 import { DeleteAgentButton } from '@/features/dashboard/components/delete-agent-button';
+import { RunEvaluationForm } from '@/features/dashboard/components/run-evaluation-form';
 import { getDashboardContext } from '@/lib/auth/page';
 import { getAgent } from '@/server/services/agents';
 import { getAiSystem } from '@/server/services/ai-systems';
+import { listEvaluations } from '@/server/services/evaluations';
 import { ApiError } from '@/lib/api/errors';
 
 function since(date: Date | null): string {
@@ -30,7 +42,10 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
     throw error;
   }
 
-  const system = await getAiSystem(ctx, agent.aiSystemId).catch(() => null);
+  const [system, { items: evaluations }] = await Promise.all([
+    getAiSystem(ctx, agent.aiSystemId).catch(() => null),
+    listEvaluations(ctx, { page: 1, pageSize: 10, agentId: agent.id })
+  ]);
 
   const model = agent.modelProvider
     ? `${agent.modelProvider} ${agent.modelName ?? ''}`.trim()
@@ -105,6 +120,70 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                 </p>
               </div>
             ) : null}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Run an evaluation</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-3'>
+            <RunEvaluationForm agentId={agent.id} />
+            <p className='text-muted-foreground text-sm'>
+              Scores this agent on the evaluation service. If the service is not reachable, the
+              attempt is still recorded so you can run it again.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent evaluations ({evaluations.length})</CardTitle>
+          </CardHeader>
+          <CardContent className='p-0'>
+            {evaluations.length === 0 ? (
+              <div className='p-6'>
+                <EmptyState
+                  icon='gauge'
+                  title='No evaluations yet'
+                  description='Run an evaluation above to score this agent and track it over time.'
+                />
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Score</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Ran</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {evaluations.map((evaluation) => (
+                    <TableRow key={evaluation.id}>
+                      <TableCell className='font-medium capitalize'>
+                        <Link
+                          href={`/dashboard/evaluations/${evaluation.id}`}
+                          className='hover:text-primary'
+                        >
+                          {evaluation.type.replace(/_/g, ' ')}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{evaluation.score ?? '-'}</TableCell>
+                      <TableCell>
+                        <EvaluationStatusBadge status={evaluation.status} />
+                      </TableCell>
+                      <TableCell className='text-muted-foreground'>
+                        {evaluation.completedAt
+                          ? new Date(evaluation.completedAt).toLocaleDateString()
+                          : 'pending'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>
