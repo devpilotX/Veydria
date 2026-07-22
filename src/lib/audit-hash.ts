@@ -77,6 +77,23 @@ export function computeAuditHash(
     .digest('hex');
 }
 
+const DEV_AUDIT_SECRET = 'dev-audit-secret-change-me';
+
+/**
+ * Returns the HMAC key that signs the audit chain. In production the key must be
+ * a strong unique value: if it is missing or still the development default this
+ * throws, so the tamper evident chain can never be signed with a public secret.
+ * Outside production the development default is allowed for local work.
+ */
 export function getAuditSecret(): string {
-  return process.env.AUDIT_LOG_SECRET ?? 'dev-audit-secret-change-me';
+  const secret = process.env.AUDIT_LOG_SECRET;
+  if (process.env.NODE_ENV === 'production') {
+    if (!secret || secret === DEV_AUDIT_SECRET) {
+      throw new Error(
+        'AUDIT_LOG_SECRET must be set to a strong unique value in production. It signs the audit log hash chain, so it cannot be empty or the development default.'
+      );
+    }
+    return secret;
+  }
+  return secret ?? DEV_AUDIT_SECRET;
 }
