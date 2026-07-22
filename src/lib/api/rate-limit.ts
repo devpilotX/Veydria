@@ -1,3 +1,5 @@
+import { rateLimited } from './errors';
+
 /**
  * A small in memory fixed window rate limiter. It is per process, which is fine
  * for a single instance or for slowing abuse on one node. For a multi instance
@@ -29,4 +31,15 @@ export function rateLimit(key: string, limit: number, windowMs: number): RateLim
 
   bucket.count += 1;
   return { allowed: true, remaining: limit - bucket.count, resetAt: bucket.resetAt };
+}
+
+/**
+ * Applies a fixed window rate limit and throws a 429 when the caller is over it.
+ * A thin wrapper over rateLimit for authenticated route handlers, keyed by
+ * organization so one tenant cannot exhaust the limit for another.
+ */
+export function enforceRateLimit(key: string, limit: number, windowMs: number): void {
+  if (!rateLimit(key, limit, windowMs).allowed) {
+    throw rateLimited('Too many requests. Please slow down and try again in a moment.');
+  }
 }
