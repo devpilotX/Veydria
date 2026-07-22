@@ -114,14 +114,6 @@ export const navGroups: NavGroup[] = [
         url: '/dashboard/settings',
         icon: 'settings',
         items: []
-      },
-      {
-        title: 'Billing',
-        url: '/dashboard/billing',
-        icon: 'billing',
-        shortcut: ['b', 'b'],
-        items: [],
-        access: { requireOrg: true }
       }
     ]
   }

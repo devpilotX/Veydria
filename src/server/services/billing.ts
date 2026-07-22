@@ -1,3 +1,7 @@
+// Deferred for launch. Billing is hidden in the UI (the billing dashboard page
+// is a placeholder and the nav entry is removed). This custom Stripe layer is
+// kept in place but unused, to be wired up after first-user feedback. The Stripe
+// webhook and /api/billing route remain so it can be turned on without a rebuild.
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { organizations, subscriptions } from '@/db/schema';
