@@ -27,9 +27,8 @@ export default function CookiesPage() {
           <h2 className='text-xl font-semibold'>Cookies we use</h2>
           <p className='text-muted-foreground mt-3'>
             Essential cookies keep you signed in and keep your session secure. They are set by our
-            auth provider and cannot be turned off without breaking sign in. Analytics cookies, set
-            through PostHog, help us see which features people use so we can improve the product.
-            These are optional and stay off until you allow them.
+            auth provider and cannot be turned off without breaking sign in. We do not use analytics
+            or advertising cookies.
           </p>
         </section>
 
@@ -44,9 +43,9 @@ export default function CookiesPage() {
         <section>
           <h2 className='text-xl font-semibold'>How to control cookies</h2>
           <p className='text-muted-foreground mt-3'>
-            You can accept or decline optional analytics from the cookie controls in the app, and
-            you can change your choice at any time. Your browser also lets you block or delete
-            cookies, though blocking essential cookies will stop sign in from working.
+            Your browser lets you block or delete cookies, though blocking the essential cookies
+            will stop sign in from working. We only set essential cookies, so there is nothing
+            optional to turn on or off.
           </p>
         </section>
 
@@ -54,8 +53,8 @@ export default function CookiesPage() {
           <h2 className='text-xl font-semibold'>Do Not Track</h2>
           <p className='text-muted-foreground mt-3'>
             Some browsers send a Do Not Track signal. There is no agreed standard for how sites
-            should respond, so we do not act on it directly. We keep optional analytics off until
-            you allow them, which gets you to a similar place.
+            should respond. We do not run analytics or advertising trackers at all, so there is
+            nothing for it to switch off.
           </p>
         </section>
 

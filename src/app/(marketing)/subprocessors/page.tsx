@@ -16,8 +16,7 @@ type Subprocessor = {
 const subprocessors: Subprocessor[] = [
   { name: 'Clerk', purpose: 'Authentication and organizations', location: 'United States' },
   { name: 'Stripe', purpose: 'Payments and billing', location: 'United States' },
-  { name: 'Resend', purpose: 'Transactional email', location: 'United States' },
-  { name: 'PostHog', purpose: 'Product analytics', location: 'United States or EU' },
+  { name: 'Sentry', purpose: 'Error monitoring, when enabled', location: 'United States' },
   {
     name: 'OpenAI',
     purpose: 'LLM provider, used only for systems where you configure it',

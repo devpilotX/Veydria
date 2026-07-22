@@ -3,7 +3,7 @@ import { buildMetadata } from '@/lib/seo';
 export const metadata = buildMetadata({
   title: 'Integrations',
   description:
-    'Veydria connects to the models, billing, auth, and data tools you already run: OpenAI, Anthropic, Google, Langfuse, Stripe, Clerk, Resend, PostHog, Postgres, and more.',
+    'Veydria connects to the models, billing, auth, and data tools you already run: OpenAI, Anthropic, Google, Stripe, Clerk, Postgres, and more.',
   path: '/integrations'
 });
 
@@ -31,11 +31,6 @@ const integrations: Integration[] = [
       'Add Gemini models by configuration. Swapping a provider is a settings change, not a rewrite.'
   },
   {
-    name: 'Langfuse',
-    category: 'Observability',
-    blurb: 'Send traces to Langfuse for detailed LLM observability alongside your audit log.'
-  },
-  {
     name: 'Stripe',
     category: 'Billing',
     blurb: 'Checkout and the billing portal for the plans that need more than Clerk Billing.'
@@ -59,16 +54,6 @@ const integrations: Integration[] = [
     name: 'PostgreSQL with pgvector',
     category: 'Data',
     blurb: 'Your systems, results, and embeddings live in one Postgres database, search included.'
-  },
-  {
-    name: 'Resend',
-    category: 'Email',
-    blurb: 'Transactional mail and alerts, written with React Email templates.'
-  },
-  {
-    name: 'PostHog',
-    category: 'Analytics',
-    blurb: 'Product analytics so we can see how teams use the app and make it better.'
   }
 ];
 

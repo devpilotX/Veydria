@@ -79,7 +79,7 @@ export default function SecurityPage() {
       <section className='mt-10'>
         <h2 className='text-xl font-semibold'>Subprocessors</h2>
         <p className='text-muted-foreground mt-3'>
-          We use a small set of vendors to run the service, such as our auth, billing, email, and
+          We use a small set of vendors to run the service, such as our authentication, billing, and
           hosting providers. The current list, with the purpose of each, is on the{' '}
           <Link href='/subprocessors' className='text-foreground underline'>
             sub processors page
