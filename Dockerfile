@@ -43,6 +43,11 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_SENTRY_DISABLED=$NEXT_PUBLIC_SENTRY_DISABLED
 
+# A placeholder DATABASE_URL so modules that read it (src/db/index.ts) do not
+# throw at import while Next collects page data. The build never connects to the
+# database. The real DATABASE_URL is provided at runtime by the container.
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
+
 RUN pnpm build
 
 # ============================================
