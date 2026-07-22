@@ -25,7 +25,7 @@ export type MeteredAction = 'classify' | 'evaluate' | 'document';
 // null means no monthly ceiling for that action on that plan. Deliberately
 // generous; these are an abuse and cost backstop, not the product's pricing.
 const MONTHLY_ACTION_CAPS: Record<PlanKey, Record<MeteredAction, number | null>> = {
-  free: { classify: 50, evaluate: 50, document: 20 },
+  free: { classify: 200, evaluate: 200, document: 50 },
   starter: { classify: 500, evaluate: 500, document: 200 },
   growth: { classify: 5000, evaluate: 5000, document: 2000 },
   scale: { classify: null, evaluate: null, document: null },
