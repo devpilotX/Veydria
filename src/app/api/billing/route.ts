@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { handleRoute, ok } from '@/lib/api/handler';
+import { handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { requireRole } from '@/lib/auth/require';
 import { createCheckoutSession, createPortalSession } from '@/server/services/billing';
 
@@ -23,7 +23,7 @@ const bodySchema = z.discriminatedUnion('action', [
 export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('admin');
-    const body = bodySchema.parse(await request.json());
+    const body = bodySchema.parse(await readJsonBody(request));
     if (body.action === 'portal') {
       return ok({ url: await createPortalSession(ctx, body.returnUrl) });
     }

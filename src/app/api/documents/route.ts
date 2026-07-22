@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { created, handleRoute, ok } from '@/lib/api/handler';
+import { created, handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { requireRole, requireTenant } from '@/lib/auth/require';
 import { listDocuments, listDocumentsSchema } from '@/server/services/documents';
 import { generateDocument, generateDocumentSchema } from '@/server/services/document-generator';
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
-    const input = generateDocumentSchema.parse(await request.json());
+    const input = generateDocumentSchema.parse(await readJsonBody(request));
     return created(await generateDocument(ctx, input));
   });
 }

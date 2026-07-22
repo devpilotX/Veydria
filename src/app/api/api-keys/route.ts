@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { created, handleRoute, ok } from '@/lib/api/handler';
+import { created, handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { requireRole } from '@/lib/auth/require';
 import { createApiKey, createApiKeySchema, listApiKeys } from '@/server/services/api-keys';
 
@@ -13,7 +13,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('admin');
-    const input = createApiKeySchema.parse(await request.json());
+    const input = createApiKeySchema.parse(await readJsonBody(request));
     return created(await createApiKey(ctx, input));
   });
 }

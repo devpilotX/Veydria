@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { handleRoute, ok } from '@/lib/api/handler';
+import { handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { requireRole, requireTenant } from '@/lib/auth/require';
 import { deleteAgent, getAgent, updateAgent, updateAgentSchema } from '@/server/services/agents';
 
@@ -17,7 +17,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
     const { id } = await params;
-    const input = updateAgentSchema.parse(await request.json());
+    const input = updateAgentSchema.parse(await readJsonBody(request));
     return ok(await updateAgent(ctx, id, input));
   });
 }
