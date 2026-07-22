@@ -7,6 +7,7 @@ import {
   listAiSystemsSchema
 } from '@/server/services/ai-systems';
 import { createAndClassifyAiSystem } from '@/server/services/classification';
+import { assertCanCreateAiSystem, assertMonthlyAction } from '@/server/services/usage';
 
 export async function GET(request: NextRequest) {
   return handleRoute(async () => {
@@ -21,6 +22,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
+    // Hard safety caps: the plan AI system limit and the monthly classify ceiling.
+    await assertCanCreateAiSystem(ctx);
+    await assertMonthlyAction(ctx, 'classify');
     const input = createAiSystemSchema.parse(await readJsonBody(request));
     // Create and classify in one transaction so a system never lands without
     // its risk tier and obligations. Any failure surfaces to the caller.
