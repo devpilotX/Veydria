@@ -12,13 +12,9 @@ import { useRouter } from 'next/navigation';
 
 const MAX_VISIBLE = 5;
 
-const actionRoutes: Record<string, string> = {
-  view: '/dashboard/workspaces',
-  'view-product': '/dashboard/product',
-  billing: '/dashboard/billing',
-  open: '/dashboard/kanban',
-  'open-chat': '/dashboard/chat'
-};
+// Map notification action ids to routes. Populate this when real notification
+// actions are introduced. No routes are defined yet, so actions stay inert.
+const actionRoutes: Record<string, string> = {};
 
 export function NotificationCenter() {
   const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotificationStore();
