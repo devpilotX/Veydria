@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { created, handleRoute, ok } from '@/lib/api/handler';
+import { created, handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { requireRole, requireTenant } from '@/lib/auth/require';
 import {
   createEvaluation,
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
-    const input = createEvaluationSchema.parse(await request.json());
+    const input = createEvaluationSchema.parse(await readJsonBody(request));
     return created(await createEvaluation(ctx, input));
   });
 }

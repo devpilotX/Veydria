@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { handleRoute, ok } from '@/lib/api/handler';
+import { handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { rateLimited, unauthorized } from '@/lib/api/errors';
 import { rateLimit } from '@/lib/api/rate-limit';
 import { resolveApiKey } from '@/lib/auth/api-key';
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       throw rateLimited('You are sending events too fast. Try again in a moment.');
     }
 
-    const input = ingestBatchSchema.parse(await request.json());
+    const input = ingestBatchSchema.parse(await readJsonBody(request));
     return ok(await ingestEvents(key.organizationId, input));
   });
 }
