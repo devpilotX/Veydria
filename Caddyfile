@@ -1,0 +1,10 @@
+# Caddy config for Veydria. Caddy obtains and renews a Let's Encrypt certificate
+# for this domain automatically over ports 80 and 443, then reverse proxies to
+# the internal web container. The DNS A record for the domain must point at this
+# host, and if Cloudflare sits in front it must be set to DNS only (grey cloud)
+# so Caddy can complete the ACME challenge and terminate TLS itself.
+
+veydria.devpilotx.com {
+	encode zstd gzip
+	reverse_proxy web:3000
+}
