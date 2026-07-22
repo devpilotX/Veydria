@@ -29,15 +29,36 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV BUILD_STANDALONE=true
 
-# Public client env can be baked at build time. Server secrets are passed at runtime.
+# Public client env must be present at build time because Next inlines every
+# NEXT_PUBLIC_* value into the browser bundle. Server secrets are never baked in;
+# they are provided at runtime through the container environment.
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_APP_URL
 ARG NEXT_PUBLIC_SENTRY_DISABLED=true
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_SENTRY_DISABLED=$NEXT_PUBLIC_SENTRY_DISABLED
 
 RUN pnpm build
 
 # ============================================
-# Stage 3: Run
+# Stage 3: Migrator (one off tool)
+# Applies migrations, installs the cosine function and audit trigger, and seeds
+# the global regulations knowledge base. No demo data. Skips the Next build.
+# ============================================
+FROM node:${NODE_VERSION} AS migrator
+WORKDIR /app
+
+RUN npm install -g pnpm@11.15.1
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+ENV NODE_ENV=production
+CMD ["pnpm", "db:migrate"]
+
+# ============================================
+# Stage 4: Run
 # ============================================
 FROM node:${NODE_VERSION} AS runner
 WORKDIR /app

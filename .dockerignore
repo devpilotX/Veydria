@@ -23,12 +23,10 @@ __mocks__/
 .vscode/
 .idea/
 
-# Environment variables
+# Environment variables. Public values are passed as build args, server secrets
+# are provided at runtime, so no .env file should ever enter the image.
 .env
-.env*.local
-.env.development
-.env.test
-.env.production.local
+.env.*
 
 # Docker files
 Dockerfile*
