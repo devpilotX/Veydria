@@ -8,6 +8,7 @@ import {
   listEvaluations,
   listEvaluationsSchema
 } from '@/server/services/evaluations';
+import { assertMonthlyAction } from '@/server/services/usage';
 
 export async function GET(request: NextRequest) {
   return handleRoute(async () => {
@@ -23,6 +24,7 @@ export async function POST(request: NextRequest) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
     enforceRateLimit(`evaluate:${ctx.organizationId}`, 30, 60_000);
+    await assertMonthlyAction(ctx, 'evaluate');
     const input = createEvaluationSchema.parse(await readJsonBody(request));
     return created(await createEvaluation(ctx, input));
   });

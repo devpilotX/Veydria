@@ -24,3 +24,6 @@ export const badRequest = (message = 'The request was invalid.') =>
 
 export const rateLimited = (message = 'Too many requests. Slow down.') =>
   new ApiError(429, message, 'rate_limited');
+
+export const quotaExceeded = (message = 'You have reached a plan limit.') =>
+  new ApiError(429, message, 'quota_exceeded');

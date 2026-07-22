@@ -3,6 +3,7 @@ import { handleRoute, ok } from '@/lib/api/handler';
 import { requireRole } from '@/lib/auth/require';
 import { enforceRateLimit } from '@/lib/api/rate-limit';
 import { runEvaluation } from '@/server/services/evaluations';
+import { assertMonthlyAction } from '@/server/services/usage';
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -15,6 +16,7 @@ export async function POST(_request: NextRequest, { params }: Params) {
   return handleRoute(async () => {
     const ctx = await requireRole('member');
     enforceRateLimit(`evaluate:${ctx.organizationId}`, 30, 60_000);
+    await assertMonthlyAction(ctx, 'evaluate');
     const { id } = await params;
     return ok(await runEvaluation(ctx, id));
   });

@@ -3,7 +3,9 @@ import { handleRoute, ok, readJsonBody } from '@/lib/api/handler';
 import { rateLimited, unauthorized } from '@/lib/api/errors';
 import { rateLimit } from '@/lib/api/rate-limit';
 import { resolveApiKey } from '@/lib/auth/api-key';
+import { apiKeyContext } from '@/lib/auth/tenant';
 import { ingestBatchSchema, ingestEvents } from '@/server/services/monitoring';
+import { assertMonitoringQuota } from '@/server/services/usage';
 
 /**
  * Ingestion endpoint for the TypeScript SDK and the MCP server. Authenticated
@@ -20,6 +22,8 @@ export async function POST(request: NextRequest) {
     }
 
     const input = ingestBatchSchema.parse(await readJsonBody(request));
+    // Hard safety cap: the org plan's monthly monitoring event quota.
+    await assertMonitoringQuota(apiKeyContext(key.organizationId), input.events.length);
     return ok(await ingestEvents(key.organizationId, input));
   });
 }
