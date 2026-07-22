@@ -12,7 +12,11 @@ RUN npm install -g pnpm@11.15.1
 
 # Copy the files pnpm needs to resolve and build the dependency tree.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-RUN pnpm install --frozen-lockfile
+# strict-dep-builds=false so a fresh container install does not fail on the
+# build-script approval gate. The app does not need those optional scripts on
+# linux-x64: sharp and esbuild load prebuilt platform binaries, sentry-cli is
+# unused with Sentry disabled, and the Next build runs on Turbopack.
+RUN pnpm install --frozen-lockfile --config.strict-dep-builds=false
 
 # ============================================
 # Stage 2: Build the app
