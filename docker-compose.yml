@@ -1,49 +1,112 @@
-# Runs the full Veydria stack locally: Postgres, the web app, and the evals
-# service. Copy .env to fill in real keys. Run migrations once the database is
-# up: pnpm db:migrate && pnpm db:seed (from the host, pointed at localhost:5432).
+# Production stack for Veydria on a single host: Caddy as the HTTPS edge, the
+# Next.js app, Postgres with pgvector, and the FastAPI evals service. All config
+# comes from .env.production on the host, which is never committed. Bring it up
+# with:
+#   docker compose --env-file .env.production up -d --build
+# Only Caddy publishes ports (80 and 443). The app, database, and evals service
+# are reachable only on the internal compose network.
 
 services:
   postgres:
     image: pgvector/pgvector:pg16
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: agentproof
-    ports:
-      - '5432:5432'
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_DB: ${POSTGRES_DB:-agentproof}
     volumes:
-      - agentproof_pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-agentproof}']
       interval: 5s
       timeout: 5s
-      retries: 10
-
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/agentproof
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      EVALS_SERVICE_URL: http://evals:8000
-      EVALS_SERVICE_API_KEY: ${EVALS_SERVICE_API_KEY:-dev-evals-key-change-me}
-      AUDIT_LOG_SECRET: ${AUDIT_LOG_SECRET:-dev-audit-secret-change-me}
-      NEXT_PUBLIC_SENTRY_DISABLED: 'true'
-    ports:
-      - '3000:3000'
+      retries: 20
 
   evals:
     build:
       context: ./services/evals
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      EVALS_SERVICE_API_KEY: ${EVALS_SERVICE_API_KEY:-dev-evals-key-change-me}
+      EVALS_SERVICE_API_KEY: ${EVALS_SERVICE_API_KEY:?set EVALS_SERVICE_API_KEY in .env.production}
+    expose:
+      - '8000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status==200 else 1)"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_SENTRY_DISABLED: ${NEXT_PUBLIC_SENTRY_DISABLED:-true}
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - '3000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
     ports:
-      - '8000:8000'
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # One off tool. Applies migrations, installs the cosine function and audit
+  # trigger, and seeds the global regulations knowledge base (no demo data).
+  # Run it before the first start:
+  #   docker compose --env-file .env.production --profile tools run --rm --build migrate
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    env_file:
+      - .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: 'no'
+    profiles:
+      - tools
 
 volumes:
-  agentproof_pgdata:
+  pgdata:
+  caddy_data:
+  caddy_config:
