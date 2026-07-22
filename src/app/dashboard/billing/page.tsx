@@ -1,57 +1,25 @@
-'use client';
-
 import PageContainer from '@/components/layout/page-container';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useOrganization } from '@clerk/nextjs';
-import { PricingTable } from '@clerk/nextjs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Icons } from '@/components/icons';
-import { billingInfoContent } from '@/config/infoconfig';
 
+export const metadata = { title: 'Billing' };
+
+// Billing is intentionally hidden for launch. The custom Stripe backend in
+// src/server/services/billing.ts and /api/billing is left in place but unused,
+// deferred until after first-user feedback. This page shows a placeholder so it
+// can never render the Clerk PricingTable while Clerk Billing is disabled.
 export default function BillingPage() {
-  const { organization, isLoaded } = useOrganization();
-
   return (
-    <PageContainer
-      isLoading={!isLoaded}
-      access={!!organization}
-      accessFallback={
-        <div className='flex min-h-[400px] items-center justify-center'>
-          <div className='space-y-2 text-center'>
-            <h2 className='text-2xl font-semibold'>No Organization Selected</h2>
-            <p className='text-muted-foreground'>
-              Please select or create an organization to view billing information.
-            </p>
-          </div>
-        </div>
-      }
-      infoContent={billingInfoContent}
-      pageTitle='Billing & Plans'
-      pageDescription={`Manage your subscription and usage limits for ${organization?.name}`}
-    >
-      <div className='space-y-6'>
-        {/* Info Alert */}
-        <Alert>
-          <Icons.info className='h-4 w-4' />
-          <AlertDescription>
-            Plans and subscriptions are managed through Clerk Billing. Subscribe to a plan to unlock
-            features and higher limits.
-          </AlertDescription>
-        </Alert>
-
-        {/* Clerk Pricing Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Plans</CardTitle>
-            <CardDescription>Choose a plan that fits your organization's needs</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='mx-auto max-w-4xl'>
-              <PricingTable for='organization' />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+    <PageContainer pageTitle='Billing' pageDescription='Plans and payment for your workspace.'>
+      <Card>
+        <CardHeader>
+          <CardTitle>Billing is coming soon</CardTitle>
+          <CardDescription>Self serve plans and payment are not switched on yet.</CardDescription>
+        </CardHeader>
+        <CardContent className='text-muted-foreground text-sm'>
+          You can keep using every feature in your current plan while we finish this. To change your
+          plan or ask about pricing in the meantime, contact us and we will sort it out.
+        </CardContent>
+      </Card>
     </PageContainer>
   );
 }
