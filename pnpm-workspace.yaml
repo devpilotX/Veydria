@@ -8,3 +8,9 @@ onlyBuiltDependencies:
 # are not required to run the app. Skip the pre-run dependency gate that
 # otherwise blocks pnpm scripts on a pending build-script approval.
 verifyDepsBeforeRun: false
+
+overrides:
+  '@types/react': 19.2.14
+  '@types/react-dom': 19.2.3
+  postcss: 8.5.14
+  sharp: 0.35.3
