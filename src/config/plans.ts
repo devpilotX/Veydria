@@ -26,7 +26,7 @@ export const PLANS: Record<PlanKey, Plan> = {
     priceMonthly: 0,
     blurb: 'Try the workflow on a single system.',
     features: ['1 AI system', 'Risk classification', 'Manual evaluations', 'Community support'],
-    limits: { aiSystems: 1, seats: 2, monitoringEventsPerMonth: 5000 }
+    limits: { aiSystems: 5, seats: 2, monitoringEventsPerMonth: 5000 }
   },
   starter: {
     key: 'starter',
