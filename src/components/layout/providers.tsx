@@ -6,6 +6,8 @@ import QueryProvider from './query-provider';
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider
+      signInForceRedirectUrl='/dashboard/overview'
+      signUpForceRedirectUrl='/dashboard/overview'
       appearance={{
         variables: {
           colorPrimary: 'var(--primary)',
