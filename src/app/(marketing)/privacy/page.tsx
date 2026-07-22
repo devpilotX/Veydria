@@ -54,9 +54,9 @@ export default function PrivacyPage() {
           <h2 className='text-xl font-semibold'>How we use data</h2>
           <p className='text-muted-foreground mt-3'>
             We use personal data to provide and maintain the service, to authenticate you and secure
-            your account, to process payments, to answer support requests, to send service messages
-            and product updates you can opt out of, to debug and improve the product, and to meet
-            our legal obligations.
+            your account, to process payments, to answer support requests, to send you service
+            messages about your account, to debug and improve the product, and to meet our legal
+            obligations.
           </p>
         </section>
 
@@ -65,9 +65,8 @@ export default function PrivacyPage() {
           <p className='text-muted-foreground mt-3'>
             Where the GDPR applies, we rely on the following bases: performance of our contract with
             you to run the service, our legitimate interests in securing and improving the product
-            balanced against your rights, your consent for optional analytics and marketing email
-            which you can withdraw, and legal obligation for records we must keep such as tax and
-            accounting data.
+            balanced against your rights, and legal obligation for records we must keep such as tax
+            and accounting data.
           </p>
         </section>
 
@@ -75,8 +74,8 @@ export default function PrivacyPage() {
           <h2 className='text-xl font-semibold'>Sharing and subprocessors</h2>
           <p className='text-muted-foreground mt-3'>
             We do not sell personal data. We share it with the vendors that help us run the service,
-            including hosting, auth, billing, email, and analytics providers, and each is bound by a
-            contract that limits use to our instructions. The current list is on the{' '}
+            including our hosting, authentication, billing, and error monitoring providers, and each
+            is bound by a contract that limits use to our instructions. The current list is on the{' '}
             <Link href='/subprocessors' className='text-foreground underline'>
               sub processors page
             </Link>
