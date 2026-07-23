@@ -19,9 +19,7 @@ export const brand = {
   url: process.env.NEXT_PUBLIC_APP_URL ?? 'https://veydria.com',
   // Handles and links used in footers and structured data.
   social: {
-    twitter: '@veydria',
-    github: 'https://github.com/veydria/veydria',
-    linkedin: 'https://www.linkedin.com/company/veydria'
+    twitter: '@veydria'
   },
   contact: {
     sales: 'sales@veydria.com',

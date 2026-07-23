@@ -10,8 +10,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
     '@type': 'Organization',
     name: brand.legalName,
     url: baseUrl,
-    description: brand.description,
-    sameAs: [brand.social.github, brand.social.linkedin]
+    description: brand.description
   };
 
   const website = {
