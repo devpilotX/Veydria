@@ -32,7 +32,11 @@ const subprocessors: Subprocessor[] = [
     purpose: 'LLM provider, used only for systems where you configure it',
     location: 'United States'
   },
-  { name: 'Vercel', purpose: 'Application hosting and edge delivery', location: 'United States' },
+  {
+    name: 'Amazon Web Services (AWS)',
+    purpose: 'Application hosting on EC2',
+    location: 'United States'
+  },
   {
     name: 'Managed PostgreSQL provider',
     purpose: 'Database hosting for your systems, results, and audit log',
