@@ -230,3 +230,49 @@ None found.
 Web app: Next.js 16.2.6 (App Router, Turbopack), React 19.2.4, TypeScript 5.7.2, Tailwind CSS 4.2.2, shadcn/ui on Base UI 1.6.0, Recharts 2.15.4 (local Tremor style components), Zod 4.3.6, TanStack Query 5.95.2, Table 8.21.3, Form 1.28.5, Drizzle ORM 0.45.2 with postgres 3.4.9. Auth and billing: Clerk 7.5.20, Stripe 22.3.2. Observability and mail (declared): Sentry 10.45.0 (wired), posthog-js 1.404.1 and posthog-node 5.45.2 (not wired), resend 6.17.2 and @react-email/components (not wired), langfuse 3.38.20 (not wired). Tooling: oxlint 1.57.0, oxfmt, Vitest 4.1.10, Playwright 1.61.1, @axe-core/playwright 4.12.1. Evals service: FastAPI 0.139.2, uvicorn 0.51.0, pydantic 2.13.4, starlette 1.3.1, httpx 0.28.1 on Python 3.14. MCP: @modelcontextprotocol/sdk 1.29.0. Database: PostgreSQL 18.4 in development with a real array cosine fallback because native pgvector is not installed locally. Runtime: Node 22 pinned in `.nvmrc` (built with 24.18.0), pnpm 11.15.1.
 
 Data source for this appendix: `package.json`, `services/evals/requirements.txt`, `pnpm licenses list`, and `pnpm audit`.
+
+
+
+## Post-deployment live audit (2026-07-23)
+
+This section updates the pre-launch audit above to the true deployed state. Veydria is now live in production on a single AWS EC2 host at https://veydria.devpilotx.com, behind Caddy with automatic HTTPS, running four Docker containers (web, postgres with pgvector pg16, evals, caddy). This audit used SSH to the host, direct read only queries against the live database, calls to the live public APIs, and local unit tests on the deployed commit.
+
+### Pre-launch findings, reconciled with the deployed state
+
+- H1 audit secret fallback: FIXED. getAuditSecret() now throws in production if AUDIT_LOG_SECRET is missing or the dev default. The live app writes audit rows with hash version 2, so a real secret is set.
+- H2 billing page could crash: FIXED. The billing page is a safe placeholder and the Clerk PricingTable is gone. Billing is deferred on purpose.
+- H3 dependency advisories: addressed. sharp was patched and unused packages removed.
+- M1 rate limiting only on ingest: addressed. Usage caps and monthly ceilings were added for classify, evaluate, document, and system creation in src/server/services/usage.ts, on top of the existing ingest rate limit.
+- M2 empty body returns 500: FIXED. Routes use readJsonBody, which returns a clean 400 on an empty or bad body.
+- M4 notifications stub: FIXED. The seeded fake notifications were removed and the store starts empty.
+- M5 and L1 PostHog, Resend, Langfuse advertised but not wired: FIXED. They were removed from the code and the marketing copy was corrected.
+- M8 production deployment not built: DONE. The AWS EC2 and Caddy stack is live.
+- M3 no AI system edit or delete in the screen: STILL OPEN. The service and API exist, but the page has no edit or delete button. Left as a known gap.
+- M10 Sentry PII and sampling: Sentry is present but disabled (no DSN). Tune sendDefaultPii and the trace sample rate before enabling.
+
+### Live audit results
+
+Verified working on the live system, by database and by API:
+
+- Auth and SSO: production Clerk instance with live keys. Google and GitHub SSO are both enabled.
+- Classification: two live systems classified high risk with 18 obligations each (9 EU AI Act, 5 NIST, 4 ISO), matching the rules engine.
+- Monitoring ingest: real events sent to the live ingest API with a key. One was flagged for an email address, one alert was raised, and the rows were confirmed in the database.
+- API keys: a revoked key returns 401 on both the public API and ingest.
+- Multi-tenant isolation: a test key returned only its own organization's data.
+- Audit chain: the live verify endpoint returned valid, and a generated audit report states the chain is intact.
+
+Evaluations, honest status: the pipeline is real (queue, run, score, pass or fail, alert, and audit trail), but the score is a deterministic placeholder from the offline Python scorer. It does not call the agent's model. There is no model-grading path implemented yet, only a comment noting it could be added. Connecting a language model key alone will not change the score. Making evaluations real means building the model-grading step in services/evals/app/scoring.py.
+
+Data reality: the live database has two organizations, both created on 2026-07-22, each with one member. One is the founder's own with a little test data, the other is empty. There are no real enterprise customers. Veydria is pre-users and pre-revenue.
+
+### Fixes shipped this session, deployed and verified live
+
+Five commits (878d8c8, aae5f88, fa565c2, 6c4ae23, 10fa9c9) pushed to origin/main, then rebuilt and restarted on the host:
+
+- Corrected the homepage product mock address from app.veydria.com to veydria.devpilotx.com.
+- Removed the Organization structured data sameAs links to nonexistent GitHub and LinkedIn profiles.
+- Listed AWS as the hosting subprocessor instead of Vercel, since the app runs on EC2.
+- Removed the SOC 2 badge from the homepage trust bar because SOC 2 is not implemented.
+- Replaced the illustrative customers page and its fictional quotes with an honest early design partner call to action.
+
+The sitemap 500 reported earlier did not reproduce. It returns 200 valid XML that matches robots.txt. Memberships populate correctly through the Clerk webhook (live count is 2).
