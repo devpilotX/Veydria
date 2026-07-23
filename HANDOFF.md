@@ -8,7 +8,7 @@ Hard rules that always apply: never use the em dash character anywhere (code, co
 
 - Branch main. The repository is published to the private GitHub remote (origin https://github.com/devpilotX/Veydria.git, default branch main) with full history and all tags.
 - Professionalized for publishing: a full README.md, a proprietary LICENSE (with the MIT starter notice retained), CONTRIBUTING.md, CODE_OF_CONDUCT.md, a GitHub Actions CI workflow (tsc, lint, unit tests, production build), pull request and issue templates, and DEPLOYMENT.md renamed to DEPLOY.md. Removed the starter FUNDING.yml and the unused skills-lock.json.
-- The product is feature complete for the MVP loop and is tested end to end. The next phase is deployment (see NEXT PHASE below).
+- The product is LIVE in production, deployed on a single AWS EC2 host at https://veydria.devpilotx.com behind Caddy (Docker containers: web, postgres with pgvector, evals, caddy). See the section "Session 2026-07-23: live audit, fixes, and current truth" at the end for the full verified state, the fixes shipped, the deploy and de-drift mechanics, and the honest limitations.
 - All green: tsc clean, oxlint 0 errors, unit tests 19 of 19, Playwright e2e 5 of 5, production build compiles, pnpm db:verify passes and now chain checks the audit log. Lighthouse homepage accessibility 100 and SEO 100. axe reports zero serious or critical violations on the homepage, sign in, and the signed in dashboard.
 
 ## Environment (Windows, PowerShell shell)
@@ -141,3 +141,72 @@ d58e240 Show the classification result after creating a system
 2. Run `pnpm db:verify` to confirm the core loop and the audit chain are intact.
 3. Run `pnpm dev` and sign in through Clerk (dev keys are in .env). The demo org has data.
 4. Continue with the deployment phase above. Follow the commit and no em dash conventions.
+
+
+
+## Session 2026-07-23: live audit, fixes, and current truth
+
+This session audited the live product end to end, fixed a short list of truthfulness and SEO issues, redeployed, and refreshed the docs. Full audit detail is in AUDIT.md under "Post-deployment live audit (2026-07-23)".
+
+### Live deployment (this is the real state now)
+
+- Host: one AWS EC2 instance, Ubuntu, internal name ip-172-31-26-145, reachable at 3.225.213.205. SSH is limited to the owner's IP by the security group (sg-001d0b58c8eafed7a). Add a client IP to port 22 there to allow SSH.
+- URL: https://veydria.devpilotx.com. This is a subdomain of the agency domain. Moving to a real brandable root domain is the biggest SEO lever and helps trust.
+- Containers (docker compose): veydria-web-1, veydria-postgres-1 (pgvector/pgvector:pg16), veydria-evals-1, veydria-caddy-1 (caddy:2, the only one publishing ports 80 and 443). All healthy.
+- Repo on host: /home/ubuntu/veydria. Config in /home/ubuntu/veydria/.env.production (mode 600, gitignored, never in the repo). Do not print or commit it.
+- Production Clerk: live keys, custom frontend domain clerk.veydria.devpilotx.com, Google and GitHub SSO both enabled. Not keyless.
+- Database: name agentproof, user postgres. Reach it read only with: docker exec veydria-postgres-1 psql -U postgres -d agentproof (local socket trust, no password needed inside the container).
+
+### Deploy and de-drift recipe (used this session, repeat for future deploys)
+
+The host git remote "origin" is a local bundle at /home/ubuntu/veydria-deploy.bundle, not GitHub (the host has no GitHub credentials). To deploy new commits:
+
+1. Push to GitHub main from local as usual.
+2. Locally: git bundle create veydria-deploy.bundle --all
+3. Copy it up: scp -i veydria-key.pem veydria-deploy.bundle ubuntu@3.225.213.205:/home/ubuntu/veydria-deploy.bundle
+4. On host: cd ~/veydria && git fetch origin && git reset --hard origin/main   (this also de-drifts the working tree; .env.production is gitignored so it is untouched)
+5. On host, only when app code changed: docker compose --env-file .env.production up -d --build   (Caddy waits for web health; downtime is a brief blip)
+6. Verify: docker ps, then fetch the live pages.
+
+Note: the web image bakes NEXT_PUBLIC_* at build time (build args in docker-compose from .env.production). Server secrets are read at runtime from .env.production. Doc-only commits (like HANDOFF and AUDIT) do not need a rebuild.
+
+De-drift done this session: the host was at an older commit plus uncommitted working tree edits, with a stale bundle origin. After the fixes it was reset hard to origin/main and rebuilt, so host git equals origin equals the running image. Clean.
+
+### Verified feature status (summary; detail in AUDIT.md)
+
+Works and verified live: auth and both SSO providers, org creation and the four roles, AI system create and classify (high risk gives 18 obligations), obligations and status changes, the regulations library (3 frameworks, 18 clauses), agents full CRUD, monitoring ingest and the flagged to alert path, alerts, documents from real data, the append only hash chained audit log and its verify, API key create and revoke, multi-tenant isolation, and usage caps. Marketing and legal pages all load and are now truthful.
+
+Real logic versus placeholder: classification, obligations, the audit log and its hash chain, monitoring, alerts, and document generation are real. Evaluation scoring is a deterministic placeholder (see limitations).
+
+### Known limitations and roadmap
+
+- Evaluation scoring is a placeholder. services/evals/app/scoring.py returns a fixed score from keyword checks plus a hash based jitter and never calls the agent's model. There is no model-grading path, only a comment. A language model key alone will not change scores. Build the model-grading step to make evaluations real. This is the top roadmap item.
+- No LLM key is set, so the provider gateway does not call any model in production.
+- AI systems have no edit or delete button in the screen, although the service and API support both.
+- Billing is off on purpose.
+- The regulation library is a focused set of 18 key clauses, not the full text of the frameworks.
+- Sentry is present but disabled.
+
+### Data reality and the throwaway test org
+
+- The live database has only two organizations, both created 2026-07-22 with one member each: the founder's own org (a little test data) and one empty org. There are no real enterprise customers. The product is pre-users and pre-revenue. Any pitch or report must say so.
+- For live write tests this session, a clearly labelled throwaway org was created: name "ZZZ Audit Throwaway (safe to delete)", clerk_org_id org_audit_throwaway_1784828184. Its injected API key was revoked. It holds a couple of monitoring events, one alert, and audit rows. It is isolated and does not affect the two real orgs.
+- Cleanup note: this org cannot be deleted by a plain cascade because the append only trigger blocks deleting its audit rows. To remove it fully, run in one transaction: ALTER TABLE audit_log DISABLE TRIGGER (the block trigger), delete the org (cascade clears children), ALTER TABLE audit_log ENABLE TRIGGER. That briefly disables the audit protection, so do it only with the owner's explicit approval, scoped to this org.
+
+### Sentry advice (not wired, owner decides)
+
+Sentry code exists but is off (NEXT_PUBLIC_SENTRY_DISABLED defaults to true, and there is no DSN). Sentry has a free Developer tier that gives a DSN, so no paid plan is needed to start. To enable: create a free Sentry project, set NEXT_PUBLIC_SENTRY_DSN and NEXT_PUBLIC_SENTRY_DISABLED=false in .env.production (optionally SENTRY_ORG, SENTRY_PROJECT, SENTRY_AUTH_TOKEN for source maps), then rebuild because the public values are baked at build time. For a compliance product, also set sendDefaultPii to false and the trace sample rate to about 0.1 in src/instrumentation.ts, and Sentry is already listed on the subprocessors page as "when enabled".
+
+### EU AI Act timeline (use the accurate version in any copy or pitch)
+
+The Act is in force. Prohibited practices apply since February 2025. General purpose AI rules apply since August 2025. Transparency duties (Article 50) apply from 2 August 2026. The high-risk Annex III duties (hiring, credit scoring, and similar) were deferred from 2 August 2026 to 2 December 2027 under the 2026 Digital Omnibus, and AI embedded in regulated products moves to 2 August 2028. Do not describe a hard August 2026 high-risk deadline. The homepage wording "phasing in through 2026 and 2027" is accurate.
+
+### Recent commit trail (newest first)
+
+10fa9c9 Replace illustrative customers with an honest early design partner page
+6c4ae23 Remove the SOC 2 badge the product does not implement
+fa565c2 List AWS as the hosting subprocessor instead of Vercel
+aae5f88 Drop nonexistent social profiles from Organization structured data
+878d8c8 Point the homepage product mock at the real domain
+4453008 Raise the free plan limits for early access exploration
+(earlier commits: usage caps and plan limits, notifications empty state, Clerk webhook secret fix, post auth redirect, and the self hosted production deployment on AWS EC2 with Caddy)
