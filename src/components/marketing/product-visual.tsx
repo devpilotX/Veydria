@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 /** A window chrome frame that wraps a product mock. */
 export function BrowserFrame({
   children,
-  url = 'app.veydria.com/dashboard/audit',
+  url = 'veydria.devpilotx.com/dashboard/audit',
   className
 }: {
   children: React.ReactNode;
