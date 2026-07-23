@@ -31,7 +31,7 @@ const featureVisuals: Record<string, { icon: keyof typeof Icons; Mock: () => Rea
     prove: { icon: 'shield', Mock: ProveMock }
   };
 
-const frameworks = ['EU AI Act', 'NIST AI RMF', 'ISO 42001', 'SOC 2'];
+const frameworks = ['EU AI Act', 'NIST AI RMF', 'ISO 42001'];
 
 const steps = [
   {
