@@ -276,3 +276,51 @@ Five commits (878d8c8, aae5f88, fa565c2, 6c4ae23, 10fa9c9) pushed to origin/main
 - Replaced the illustrative customers page and its fictional quotes with an honest early design partner call to action.
 
 The sitemap 500 reported earlier did not reproduce. It returns 200 valid XML that matches robots.txt. Memberships populate correctly through the Clerk webhook (live count is 2).
+
+
+
+## Verify-first health checkup (2026-07-25)
+
+A read-only health and quality checkup of the live product on commit b9127c3. The method was verify-first: prove any issue with concrete evidence (a log line, a failing command, a bad HTTP response, a query result) before changing anything, and change nothing during the investigation. No code, server config, or database was modified. The result is a clean bill of health, so no code fixes were shipped. This section is the only change to this file, committed with the matching HANDOFF.md note as a docs-only commit on top of b9127c3.
+
+### Verdict
+
+No critical, high, or medium issues. No genuine product bugs found in the code, on the live site, or on the server. The product is healthy end to end. The only items are low or cosmetic, and all were left as is by owner decision.
+
+### Commit sync
+
+LOCAL = origin = SERVER, all at b9127c3. The host working tree is clean with no drift.
+
+### Quality gates, re-run on b9127c3
+
+| Gate | Command | Result |
+| ---- | ------- | ------ |
+| Type check | pnpm exec tsc --noEmit | Pass, 0 errors |
+| Lint | pnpm lint | Pass, 0 errors, 30 warnings (expected no-console in CLI and tests) |
+| Unit tests | pnpm test | Pass, 19 of 19 |
+| End to end | pnpm test:e2e | Pass, 5 of 5 |
+| Production build | pnpm build | Pass, 71 routes |
+| Core loop and audit chain | pnpm db:verify | Pass, fresh org high with 18 obligations, alert raised, chain verifies across 28 entries |
+
+### Live site
+
+All marketing, legal, feature, and blog routes return 200. Dashboard routes 307 redirect to sign in. Unknown paths 404. A browser crawl over 28 public pages found 0 console errors, 0 page errors, 0 broken images, and 0 broken links. TLS is a valid Let's Encrypt certificate to 2026-10-20, and port 80 returns 308 to HTTPS. Auto-renewal is confirmed at runtime from Caddy's ACME renewal log lines, backed by the persistent caddy_data volume, so it is not just valid today.
+
+### Server, containers, and data
+
+Four containers up with 0 restarts and 0 errors or warnings in the last 24h. The old "Unexpected end of JSON input" line does not appear in production, because the production build strips console output. The append-only audit trigger is installed and enabled in the live database and was observed firing once during the prior cleanup, which proves it works. The database holds exactly two organizations, both the owner's (one empty, one with a little test data), the throwaway test org is gone, and there are no leftover test orgs. .env.production is mode 600, a secrets-in-logs scan across all containers returned zero matches, and only ports 22, 80, and 443 are public while the database, web, and evals stay on the internal Docker network.
+
+### Resources
+
+2 vCPU idle, 7.6 GiB RAM with 5.8 GiB available, 48 GB disk at 24 percent used, and a 9.4 MB database. Large headroom on every axis. Docker build cache is about 7 GB with roughly 3 GB reclaimable, left as is because the disk is not tight.
+
+### Reconciliation with prior findings
+
+- M7 Content Security Policy: still absent by design, documented in next.config.ts, left as is by decision.
+- M3 AI system edit and delete UI: still open, unchanged, a known gap since the service and API already support both.
+- M10 Sentry: still present but disabled (no DSN), unchanged.
+- All other pre-launch and post-deployment findings remain resolved as recorded above. No regressions found.
+
+### Decisions
+
+No Phase 3 code changes. Docker prune, adding swap, and enumerating the security-group rules were skipped by owner decision. The temporary SSH allow rule added for this audit is being removed by the owner afterward.

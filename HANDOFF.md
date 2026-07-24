@@ -210,3 +210,54 @@ aae5f88 Drop nonexistent social profiles from Organization structured data
 878d8c8 Point the homepage product mock at the real domain
 4453008 Raise the free plan limits for early access exploration
 (earlier commits: usage caps and plan limits, notifications empty state, Clerk webhook secret fix, post auth redirect, and the self hosted production deployment on AWS EC2 with Caddy)
+
+
+
+## Session 2026-07-25: verify-first health checkup (read-only, no code changes)
+
+A verify-first health and quality checkup of the live product. The rule was to prove any issue with concrete evidence before touching anything, and to change nothing in the investigation. Phases 1 and 2 were read-only. No code, server config, or database was changed. The outcome is a clean bill of health, so no Phase 3 code changes were made. This section and the matching one in AUDIT.md are the only edits, committed as a docs-only change on top of b9127c3.
+
+### Commit sync
+
+LOCAL = origin = SERVER, all at b9127c3 (b9127c31ea8b6c5c33449cd96432d22ceaf4d1d9). The server working tree at /home/ubuntu/veydria is clean, no drift. Verified three ways for local and origin (git rev-parse, git ls-remote, GitHub API) and by SSH on the host.
+
+### Quality gates (all pass on b9127c3)
+
+- tsc --noEmit: pass, 0 errors (clear .next first, stale cache gotcha still applies).
+- oxlint: pass, 0 errors, 30 warnings (all no-console in CLI scripts and tests, expected).
+- vitest: pass, 19 of 19.
+- playwright e2e: pass, 5 of 5 (full signed in journey through the real UI).
+- next build: pass, 71 routes.
+- pnpm db:verify: pass, fresh org classified high with 18 obligations, alert raised, audit chain verifies across 28 entries.
+
+### Live site
+
+All marketing, legal, feature, and blog routes return 200. Dashboard routes 307 redirect to sign in (correct auth gate). Unknown paths 404. A browser crawl of 28 public pages found 0 console errors, 0 page errors, 0 broken images, and 0 broken internal links. The only failed sub-requests were Next.js RSC prefetch aborts on the sign in and sign up links whose targets return 200, which is benign framework behavior. TLS is a valid Let's Encrypt cert good to 2026-10-20, and HTTP on port 80 returns 308 to HTTPS. Security headers are strong (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy). Content Security Policy is intentionally absent and documented in next.config.ts, and it was left as is by decision.
+
+### Containers and logs
+
+All four containers up with 0 restarts: web (healthy), evals (healthy), postgres (healthy), caddy (no healthcheck defined, which is expected, so it shows health none). Error and warning counts in the last 24h were 0 and 0 across all four. The known "Unexpected end of JSON input" log does not appear in production at all, because next.config.ts strips console.* in the production build, so it was only ever a dev-server line. One historical postgres line, "audit_log is append only" on 2026-07-23, is the append-only trigger doing its job during the prior session cleanup, not an app error.
+
+### TLS auto-renewal
+
+Confirmed at runtime, not just valid today. Caddy logs show active ACME renewal management for veydria.devpilotx.com (renewal info stored, cert_expiry maps to 2026-10-20), with storage on the persistent caddy_data volume and restart unless-stopped, so certs and the ACME account survive restarts.
+
+### Audit protection in the live DB
+
+The audit_log_no_mutation trigger is installed and enabled on audit_log, and the agentproof_block_audit_mutation function is present. It was observed firing once historically, which proves the guard works.
+
+### Data sanity (counts only, no writes)
+
+Exactly two organizations, both yours: Deepbite's Organization (empty, 0 systems, 0 audit, 0 events, 0 alerts) and devpilot's Organization (2 systems, 21 audit rows, 0 events, 2 alerts). The ZZZ Audit Throwaway org is gone, and there are no leftover org_audit_throwaway_ or org_e2e_ test orgs.
+
+### VPS resources (big headroom)
+
+2 vCPU with load near zero. Memory 7.6 GiB total, 1.8 GiB used, 5.8 GiB available. Swap 0 B (none configured, left as is at current usage). Disk 48 GB total, 12 GB used at 24 percent, 37 GB free. Project dir 7.2 MB. Database 9.4 MB. Docker uses about 9.6 GB, of which the build cache is about 7 GB with roughly 3 GB reclaimable, left as is by decision since the disk is not tight. Per-container memory is light: web 184 MiB, evals 35 MiB, postgres 34 MiB, caddy 15 MiB. Not close to running out of anything.
+
+### Server security
+
+.env.production is mode 600 owned by ubuntu. A secrets-in-logs scan across all four containers found 0 matches (counts only, no values printed). Only ports 22, 80, and 443 listen on the public interface; postgres, web, and evals are on the internal Docker network only, so the database is not exposed to the internet. The security group rules could not be enumerated from here because the AWS CLI is not installed locally or on the host and the instance has no EC2-describe role; the effective posture was proven by the port scan and by SSH connectivity.
+
+### Decisions and housekeeping
+
+No Phase 3 code changes. CSP left as is (intentional). Docker prune, adding swap, and security-group rule enumeration were skipped by owner decision. A temporary SSH allow rule for 106.222.251.202/32 on sg-001d0b58c8eafed7a port 22 was added for this audit and is being removed by the owner afterward. The one still-open product gap from prior audits remains as documented: AI systems have no edit or delete button in the screen, although the service and API support both.
